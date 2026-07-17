@@ -10,8 +10,8 @@ Modernized ASP.NET Core MVC application for PIMento vehicle demo workflows.
 
 Set required secrets via environment variables (recommended):
 
-- PIMento_CLIENT_ID
-- PIMento_CLIENT_SECRET
+- EBIZ_CLIENT_ID
+- EBIZ_CLIENT_SECRET
 - PAYMENTS_API_KEY
 - SENDGRID_API_KEY
 - TWILIO_ACCOUNT_SID
@@ -26,7 +26,7 @@ From repository root:
 ```powershell
 dotnet restore
 dotnet build
-dotnet run --project PIMento.Demo.Web
+dotnet run --project PHXCOM.VehiclesDemo.Web
 ```
 
 ## Test

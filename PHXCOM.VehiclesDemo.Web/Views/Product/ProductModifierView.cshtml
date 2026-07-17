@@ -1,0 +1,90 @@
+﻿@model IEnumerable<PHXCOM.PlatformSDK.Models.Modifier>
+@{
+    Layout = null;
+    int count = 0;
+    string display = "";
+}
+
+    <div id="syncOptionModList">
+        <div id="modifiersContainer" style="display:none">
+            @if (Model != null)
+            {
+                for (int i = 1; i <= Model.Count(); i++)
+                {
+                    <div id="modifier_selector_@i" class="col-lg-12 text-align-right mt-3 px-0"></div>
+                }
+            }
+            <div id="personalize-mod-container" class="col-lg-12 text-align-right mt-3"></div>
+        </div>
+        @foreach (var modifier in Model)
+        {
+            count++;
+            display = "";
+            if (modifier.ParentId > 0)
+            {
+                display = "display:none";
+                if (!Model.Where(x => x.ModifierId == modifier.ParentId).Select(x => x.Required).FirstOrDefault() && modifier.Required)
+                {
+                    modifier.Required = false;
+                }
+            }
+            if (modifier.IsFreeText == false && modifier.ModifierOptions.Count() > 0)
+            {
+                <div sub-of="@modifier.ParentId" class="optionListModifiers" id="modifier_@count">
+                    <div class="col-lg-12 text-align-right mt-3 modifier px-0" name="hdn_modifiers_inuse" current-modifierid="@modifier.ModifierId" style="@display" sub-of="@modifier.ParentId.GetValueOrDefault(0)">
+                        <label class="wrapper-midifier-header">@modifier.ModifierCaption</label>
+                        <table class="product-lists wrapper-modifier-selector wrapper-set-white-bg">
+                            <tr>
+                                @foreach (var option in modifier.ModifierOptions)
+                                {
+                                    if (modifier.RequireImage == 1)
+                                    {
+                                        <td class="wrapper-modifier">
+                                            <button onclick="loadImageViwer(this)" data-img-scr="@option.Image" data-name="@option.OptionName" data-description="@option.OptionDescription" class="wrapper-item-info"><i class="fa fa-search-plus"></i></button>
+                                            <div class="modifier-option-selector" data-selected="false" id="testMod_@option.OptionId" onclick="selectProductModifier(@option.OptionId,'@modifier.ModifierName','@option.Image','@option.OptionName',@modifier.ModifierId,@modifier.ModifierInstanceId, @option.Price,@count)">
+                                                <div class="image">
+                                                    <img src="@option.Image">
+                                                </div>
+                                                <div class="text">@option.OptionName</div>
+                                                <input type="radio" id="rd_option_@option.OptionId" />
+                                                @*<input type="radio" class="rad-motifier-option" id="rd_option_@option.OptionId" instanceId="@modifier.ModifierInstanceId" modifierid="@modifier.ModifierId" optionId="@option.OptionId" modifierName="@modifier.ModifierName" optionName="@option.OptionName" modifierPrice="@option.Price" />*@
+                                                <input type="hidden" id="preModifierPrice" value="0" />
+                                            </div>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="wrapper-modifier">
+                                            @*<button onclick="loadImageViwer(this)" data-img-scr="@option.Image" data-name="@option.OptionName" data-description="@option.OptionDescription" class="wrapper-item-info"><i class="fa fa-search-plus"></i></button>*@
+                                            <div class="modifier-option-selector" id ="testMod_@option.OptionId" onclick="selectProductModifier(@option.OptionId,'@modifier.ModifierName','','@option.OptionName',@modifier.ModifierId,@modifier.ModifierInstanceId, @option.Price, @count)">
+                                                @*<div class="image">
+                                                    <img src="">
+                                                </div>*@
+                                                <div class="text">@option.OptionName</div>
+                                                <input type="radio" id="rd_option_@option.OptionId" />
+                                                @*<input type="radio" class="rad-motifier-option" id="rd_option_@option.OptionId" instanceId="@modifier.ModifierInstanceId" modifierid="@modifier.ModifierId" optionId="@option.OptionId" modifierName="@modifier.ModifierName" optionName="@option.OptionName" modifierPrice="@option.Price"/>*@
+                                                <input type ="hidden" id="preModifierPrice" value="0" />
+                                            </div>
+                                        </td>
+                                    }
+                                }
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <div class="optionListModifiers ">
+                    <div class="col-lg-12 text-align-right mt-3" current-modifierid="@modifier.ModifierId" style="@display" sub-of="@modifier.ParentId">
+                        <label class="wrapper-midifier-header">@modifier.ModifierCaption</label>
+                        <input instanceid="@modifier.ModifierInstanceId" modifiername="@modifier.ModifierName" onkeyup="showChildModifier(this)" type="text" id="txt_mod_@modifier.ModifierInstanceId" attribute-caption="@modifier.ModifierCaption" attribute-instance="@modifier.ModifierId" modifierid="@modifier.ModifierId" class="form-control search-item-select-modifiers personalize-mod-element" maxlength="@(string.IsNullOrEmpty(modifier.MaxLength)==true?"10":modifier.MaxLength)" required-entry="@(modifier.Required==true?1:0)" />
+                    </div>
+                </div>
+            }
+
+
+        }
+    </div>

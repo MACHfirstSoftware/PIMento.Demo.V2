@@ -1,0 +1,41 @@
+﻿@model List<PHXCOM.PlatformSDK.Models.ApplicationFitment>
+@{
+    Layout = null;
+}
+
+<div id="ApplicationFitmentContainer" class="col-lg-12 px-0">
+    <div class="table-responsive wrapper-fitment-map">
+        <table class="table table-bordred table-striped">
+            <thead>
+                <tr>
+                    <th scope="col" class="col_0">Item Number</th>
+                    <th scope="col" class="col_1">Details</th>
+                    <th scope="col" class="col_2">Application</th>
+                    <th scope="col" class="col_2">Position</th>
+                    <th scope="col" class="col_3">Sub Model</th>
+                    <th scope="col" class="col_4">Body/Style/Trim</th>
+                    <th scope="col" class="col_5">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td data-label="ItemNo : &nbsp;">@item.ItemNo</td>
+                            <td data-label="ItemDetail : &nbsp;">@item.ItemDetail</td>
+                            <td data-label="Application : &nbsp;">@item.ApplicationName</td>
+                            <td data-label="Position : &nbsp;">@item.Position</td>
+                            <td data-label="Last updated : &nbsp;">@item.SubModel</td>
+                            <td data-label="Last updated : &nbsp;">@item.Trim</td>
+                            <td data-label="Last updated : &nbsp;">@item.Quntity</td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using PHXCOM.PlatformSDK.Services;
 using PIMento.Demo.Web.Utils;
 
@@ -44,21 +43,8 @@ namespace PIMento.Demo.Web
             });
             services.AddHttpContextAccessor();
 
-            var ebizClientId = FirstNonEmpty(
-                Environment.GetEnvironmentVariable("EBIZ_CLIENT_ID"),
-                Environment.GetEnvironmentVariable("PIMento_CLIENT_ID"),
-                Configuration["Ebiz:ClientId"]);
-
-            var ebizClientSecret = FirstNonEmpty(
-                Environment.GetEnvironmentVariable("EBIZ_CLIENT_SECRET"),
-                Environment.GetEnvironmentVariable("PIMento_CLIENT_SECRET"),
-                Configuration["Ebiz:ClientSecret"]);
-
-            if (string.IsNullOrWhiteSpace(ebizClientId) || string.IsNullOrWhiteSpace(ebizClientSecret))
-            {
-                throw new InvalidOperationException("Missing SDK client credentials. Expected EBIZ_* or PIMento_* environment variables.");
-            }
-
+            var ebizClientId = AppConfig.GetRequired("Ebiz:ClientId", "PIMento_CLIENT_ID");
+            var ebizClientSecret = AppConfig.GetRequired("Ebiz:ClientSecret", "PIMento_CLIENT_SECRET");
             EbizClient.Connect(ebizClientId, ebizClientSecret);
 
         }
@@ -82,20 +68,6 @@ namespace PIMento.Demo.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
-            var slugHostOverride = Environment.GetEnvironmentVariable("SLUG_HOST_OVERRIDE")
-                ?? Configuration["SlugHostOverride"]
-                ?? "demo.pimento.io";
-
-            if (!string.IsNullOrWhiteSpace(slugHostOverride))
-            {
-                app.Use(async (context, next) =>
-                {
-                    context.Request.Host = new HostString(slugHostOverride);
-                    context.Request.Headers["Host"] = slugHostOverride;
-                    await next().ConfigureAwait(false);
-                });
-            }
 
               
 
@@ -122,19 +94,6 @@ namespace PIMento.Demo.Web
                     defaults: new { controller = "Home", action = "Handler" });
 
             });
-        }
-
-        private static string FirstNonEmpty(params string[] values)
-        {
-            foreach (var value in values)
-            {
-                if (!string.IsNullOrWhiteSpace(value))
-                {
-                    return value;
-                }
-            }
-
-            return string.Empty;
         }
     }
 }

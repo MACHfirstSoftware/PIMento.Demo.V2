@@ -38,101 +38,18 @@ namespace PIMento.Demo.Web.Controllers
         {
             EbizClient.Session.SetSlugSession(new Dictionary<string, string>());
 
-            var features = new List<Feature>();
-            var makes = new List<FilterProp>();
-
             try
             {
                 var featureResponse = await EbizClient.Feature.GetFeaturesAsync();
-                features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
-            }
-            catch
-            {
-            }
-
-            try
-            {
                 var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
-                makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
-
-                if (makes.Count == 0 && !string.IsNullOrWhiteSpace(res.Content))
-                {
-                    var wrapped = JObject.Parse(res.Content)["value"]?.ToString();
-                    if (!string.IsNullOrWhiteSpace(wrapped))
-                    {
-                        makes = JsonUtil.ListDeserialize<List<FilterProp>>(wrapped) ?? new List<FilterProp>();
-                    }
-                }
+                List<FilterProp> makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
+                List<Feature> features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
+                return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
             }
             catch
             {
+                return View(new Tuple<List<Feature>, List<FilterProp>>(new List<Feature>(), new List<FilterProp>()));
             }
-
-            if (makes.Count == 0)
-            {
-                try
-                {
-                    var filterResponse = await EbizClient.Product.GetFilterProductAsync(true, -1, string.Empty);
-                    if (!string.IsNullOrWhiteSpace(filterResponse.Content))
-                    {
-                        var rows = JObject.Parse(filterResponse.Content)["value"] as JArray;
-                        if (rows != null)
-                        {
-                            makes = rows
-                                .Select(r => r["make"]?.ToString())
-                                .Where(m => !string.IsNullOrWhiteSpace(m))
-                                .Distinct(StringComparer.OrdinalIgnoreCase)
-                                .OrderBy(m => m)
-                                .Select(m => new FilterProp { make = m })
-                                .ToList();
-                        }
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            if (makes.Count == 0)
-            {
-                try
-                {
-                    var apps = EbizClient.Application.GetApplications().ContentObject as List<Application>;
-                    if (apps != null && apps.Count > 0)
-                    {
-                        makes = apps
-                            .Select(a => a.Make)
-                            .Where(m => !string.IsNullOrWhiteSpace(m))
-                            .Distinct(StringComparer.OrdinalIgnoreCase)
-                            .OrderBy(m => m)
-                            .Select(m => new FilterProp { make = m })
-                            .ToList();
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
-        }
-
-        [HttpGet("/Parts")]
-        public IActionResult Parts()
-        {
-            return Redirect("/Product/FilterProductView");
-        }
-
-        [HttpGet("/Accessories")]
-        public IActionResult Accessories()
-        {
-            return Redirect("/Product/ProductSearchResults?searchkey=accessories");
-        }
-
-        [HttpGet("/Pro-Shop")]
-        public IActionResult ProShop()
-        {
-            return Redirect("/Product/ProductSearchResults?searchkey=pro-shop");
         }
 
         public async Task<IActionResult> Handler()
@@ -140,8 +57,7 @@ namespace PIMento.Demo.Web.Controllers
             EbizClient.SetMemoryCacheProp(_cache);
 
             var slugHostOverride = Environment.GetEnvironmentVariable("SLUG_HOST_OVERRIDE")
-                ?? _configuration["SlugHostOverride"]
-                ?? "demo.pimento.io";
+                ?? _configuration["SlugHostOverride"];
             if (!string.IsNullOrWhiteSpace(slugHostOverride))
             {
                 HttpContext.Request.Host = new HostString(slugHostOverride);

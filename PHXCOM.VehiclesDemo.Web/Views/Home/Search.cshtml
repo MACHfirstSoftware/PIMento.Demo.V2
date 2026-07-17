@@ -1,0 +1,69 @@
+﻿
+@model List<PHXCOM.PlatformSDK.Models.SearchResult>
+@{
+
+    Layout = null;
+    string slug = "";
+}
+
+
+<div class="inner-search-wrapper">
+    <div>
+        <div class="col-12 py-2">
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {                  
+                    if (item.Type == "category") item.Type = "Categories";
+                    else if (item.Type == "product") item.Type = "Products";
+                    //else item.Type = "Articles";
+
+                    <h5 class="search-sub-header">@item.Type</h5>
+                    <div class="result-wrapper d-inline-block w-100">
+                        <ul class="pl-0">
+                            @foreach (var itemContent in item.SearchResultContent)
+                            {
+                                var imgSrc = "/images/no-image.png";
+                                var imgClass = "no-image";
+                                <li>
+                                    @{ 
+                                        if(item.Type == "Categories")
+                                        {
+                                            slug = string.IsNullOrEmpty(itemContent.url) ? "" : itemContent.url.Split('/').Last();
+                                        }
+                                        else if(item.Type == "Products") 
+                                        {
+                                            slug = itemContent.url;
+                                        }
+                                    }
+                                    <a href=/@slug>
+                                        <div class="col-3 px-0 float-left search-img">
+                                            @if (!string.IsNullOrEmpty(itemContent.image))
+                                            {
+                                                imgSrc = itemContent.image;
+                                                imgClass = "";
+                                            }
+                                            <img src="@imgSrc" class="@imgClass" alt="@itemContent.objectName" />
+                                        </div>
+                                        <div class="col-9 float-left pr-0 pl-2 d-flex align-items-center" style="height:48px;">
+                                            <label class="search-item-title ">@itemContent.objectName</label>
+                                            <br />
+                                            @*<p class="search-item-description">
+                                                @itemContent.objectDescription
+                                            </p>*@
+                                        </div>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+            }
+            else
+            {
+                <span> No search results</span>
+            }
+        </div>
+    </div>
+</div>

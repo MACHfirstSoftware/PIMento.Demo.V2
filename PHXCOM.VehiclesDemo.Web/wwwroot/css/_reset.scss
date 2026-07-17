@@ -1,0 +1,27 @@
+﻿//refering master
+
+.navbar-dark {
+   
+    margin: 0 auto;
+    background-color: #fff !important;
+    width: 100%;
+    z-index: 999;
+    box-shadow: 8px -2px 18px 3px #e9e9e9;
+}
+
+.input-group {
+    .input-lg {
+        height: calc(1.4em + .50rem + 2px);
+        font-weight: normal;
+        font-size: 0.9em;
+    }
+
+    .btn {
+        line-height: 1.25;
+        outline:none;
+        &:hover {
+            background-color: #221e1f;
+        }
+    }
+}
+

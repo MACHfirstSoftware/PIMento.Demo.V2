@@ -1,0 +1,86 @@
+﻿
+@{
+
+    Layout = null;
+
+
+    var months = ViewBag.Months as Dictionary<string, string>;
+    var cardTypes = new Dictionary<string, string>() { { "VISA", "VISA img" }, { "MasterCard", "master img" }, { "American Express", "american img" } };
+
+}
+<div id="divCreditcards" class="payment-inputs mt-1 ">
+    <form id="formCreditcard" class="common-validate">
+        <div class="row">
+            <div class="col-md-6 col-12 form-group">
+                <label for="txt_cc_name">Name on Card</label>
+                <input type="text" name="txt_cc_name" id="txt_cc_name" class="form-control" required />
+            </div>
+            <div class="col-md-6 col-12 form-group">
+                <label for="txt_cc_number">Card Number</label>
+                <span id="cardType" class="credit-card-default required"></span>
+                <input type="text" name="txt_cc_number" id="txt_cc_number" card-type="" class="form-control" onKeyup="getCardType()" onkeypress="return isNumberKey(event)" maxlength="16" required />
+            </div>
+            <div class="col-12 col-md-4">
+                <label for="cardPaymentExpireMonth">Expiration Month</label>
+                <select id="cardPaymentExpireMonth" class="form-control">
+
+                    @foreach (var item in months)
+                    {
+
+                        if (DateTime.UtcNow.Month == Convert.ToInt32(item.Key))
+                        {
+                            <option selected value="@item.Key">@item.Value</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Key">@item.Value</option>
+                        }
+
+                    }
+
+                </select>
+            </div>
+            <div class="col-12 col-md-4">
+                <label for="cardPaymentExpireYear">Expiration Year</label>
+                <select id="cardPaymentExpireYear" class="form-control required">
+
+                    @for (int i = DateTime.Now.Year; i < DateTime.Now.Year + 11; i++)
+                    {
+                        if (i == DateTime.Now.Year)
+                        {
+                            <option value="@i" selected>@i</option>
+                        }
+                        else
+                        {
+                            <option value="@i">@i</option>
+                        }
+
+                    }
+                    
+                </select>
+            </div>
+            <div class="col-12 col-md-4">
+                <label for="txt_cc_SecurityCode">Security Code</label>
+                <input type="text" name="txt_cc_SecurityCode" id="txt_cc_SecurityCode" value="" class="form-control" required />
+
+            </div>
+
+            @*<div class="col-12 col-md-3">
+                    <label>Card Type:  </label>
+
+                    @foreach (var card in cards)
+                    {
+                        var obj = cardTypes.FirstOrDefault(x => x.Key.ToLower() == card.Name.ToLower());
+                        <div>@card.Name</div>
+                        @if (obj.Key != null)
+                        {
+                            <img src="@obj.Value" />
+                        }
+                    }
+
+                </div>*@
+
+        </div>
+    </form>
+</div>
+

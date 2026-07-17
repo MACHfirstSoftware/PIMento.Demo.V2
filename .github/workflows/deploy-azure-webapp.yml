@@ -15,7 +15,7 @@ concurrency:
 env:
   DOTNET_NOLOGO: true
   WEBAPP_NAME: pimento-demo-v2
-  PROJECT_PATH: PIMento.Demo.Web/PIMento.Demo.Web.csproj
+  PROJECT_PATH: PHXCOM.VehiclesDemo.Web/PHXCOM.VehiclesDemo.Web.csproj
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore PIMento.Demo.sln
+        run: dotnet restore PHXCOM.VehiclesDemo.sln
 
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ github.workspace }}/publish
@@ -75,38 +75,15 @@ jobs:
             $base = "https://${{ env.WEBAPP_NAME }}.azurewebsites.net"
           }
 
-          function Test-RouteWithRetry {
-            param(
-              [string]$Uri,
-              [int]$MaxAttempts = 8,
-              [int]$RetryDelaySeconds = 10
-            )
-
-            for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
-              try {
-                $response = Invoke-WebRequest -Uri $Uri -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 60
-                if ($response.StatusCode -lt 400) {
-                  return $response.StatusCode
-                }
-              }
-              catch {
-                if ($attempt -eq $MaxAttempts) {
-                  throw
-                }
-              }
-
-              Start-Sleep -Seconds $RetryDelaySeconds
-            }
-
-            throw "Route did not become healthy: $Uri"
-          }
-
-          $paths = @('/', '/Index', '/Account/Login', '/Home/Cache')
+          $paths = @('/', '/Parts', '/Order/Cart')
           foreach ($path in $paths) {
             $uri = "$base$path"
             try {
-              $status = Test-RouteWithRetry -Uri $uri
-              Write-Host "$path -> $status"
+              $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 60
+              if ($response.StatusCode -ge 400) {
+                throw "Smoke test failed for $uri with status $($response.StatusCode)"
+              }
+              Write-Host "$path -> $($response.StatusCode)"
             }
             catch {
               throw "Smoke test failed for $uri. $($_.Exception.Message)"

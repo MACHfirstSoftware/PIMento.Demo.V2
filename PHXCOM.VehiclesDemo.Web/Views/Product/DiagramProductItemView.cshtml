@@ -1,0 +1,175 @@
+﻿@model PHXCOM.PlatformSDK.Models.Product
+@{
+    Layout = null;
+    bool hasQtyDP = true;
+    int qtyMultiplier = 1;
+    int defaultQTY = 1;
+    int maxQTY = 10;
+    decimal price = 0;
+    bool hasImage = false;
+    string checkItem = " enabled";
+
+    //string selectDisable = ViewBag.isCartTypeCheck == true ? "disabled" : "";
+    //int diagramId = 42;
+
+}
+
+<div class="col-lg-12 form-group pl-0 pr-0 wrapper-grid-title title-font d-none">Select items and quantities to add to cart</div>
+<div class="grid-wrapper-full">
+    <div class="wrapperCmnGrid setAlign">
+        <div id="divdiagramItems">
+
+            @foreach (var product in Model.Items)
+            {
+                //++diagramId;
+                if (!string.IsNullOrEmpty(product.ItemImage))
+                {
+                    hasImage = true;
+                }
+                else { hasImage = false; }
+
+                <div id="dig_@product.DiagramData.DiagramId">
+                    <div class="item-list-header-align">
+                        <input class="form-controla bg-clr-gray" type="text" value="@product.DiagramData.DiagramId" disabled="disabled" />
+                        <label class="item-name"><span class="border-right"></span> <span>@(string.IsNullOrEmpty(product.ProductCode) == true ? product.ItemDetails : product.ProductCode + "-" + product.ItemDetails)</span></label>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordred table-striped part-list-product" role="grid" id="tbProductItem">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="col_1 col"></th>
+                                    @if (hasImage)
+                                    {
+                                        <th scope="col" class="col_1 col">Image</th>
+                                    }
+                                    <th scope="col" class="col_2 col">Item No</th>
+                                    <th scope="col" class="col_3 col">Item Description</th>
+                                    @*<th scope="col" class="col_4 col">Type</th>*@
+                                    <th scope="col" class="col_5 col is-bom">Quantity </th>
+                                    <th scope="col" class="col_6 col text-right">Price/Units</th>
+                                    @*<th scope="col" class="col grid-button-wrapper"></th>*@
+                                </tr>
+                            </thead>
+                            <tbody id="tblItemList_@product.ProductId">
+                                @{
+                                    price = product.SuggestedPrice.GetValueOrDefault();
+                                    hasQtyDP = true;
+                                    //product.MaxQuantity = product.MaxQuantity == 0 ? 10 : product.MaxQuantity;
+                                    if (!product.CalculateInventory)
+                                    {
+                                        hasQtyDP = true;
+                                        checkItem = "";
+
+                                    }
+                                    else if (product.CalculateInventory && product.QuantityInStock.GetValueOrDefault() == 0 && product.NextRestockDate != null)
+                                    {
+                                        hasQtyDP = false;
+                                        checkItem = " disabled";
+
+                                    }
+                                }
+
+                                
+
+                                <tr item-sku="@product.ItemId">
+                                    <td class="col">
+                                        <div class="float-lg-left float-xl-left mr-3">
+                                            <input @checkItem type="checkbox" id="chk_@product.ItemId" class="styled-checkbox-grid" onchange="changeqtyddl(@product.ItemId, this)" />
+                                            <label for="chk_@product.ItemId"></label>
+                                        </div>
+
+                                    </td>
+                                    @if (hasImage)
+                                    {
+                                        <td>
+                                            <div class="float-lg-left  float-xl-left">
+                                                @if (product.ItemImage == null)
+                                                {
+                                                    <img class="noImage" />
+                                                }
+                                                else
+                                                {
+                                                    <img src=@product.ItemImage width="60" height="50" />
+                                                }
+                                            </div>
+                                        </td>
+                                    }
+
+                                    <td class="col" data-label="Item No : &nbsp;">
+                                        <span>@product.ItemNumber</span>
+                                    </td>
+                                    <td class="col" data-label="Description : &nbsp;">
+                                        @product.ItemDetails
+                                    </td>
+                                    @*<td class="col" data-label="Type : &nbsp;">
+                                        @product.InventoryType
+                                    </td>*@
+                                <td class="col" data-label="Qty : &nbsp;">
+
+                                    @if (hasQtyDP)
+                                    {
+                                        qtyMultiplier = product.QtyMultiplier == 0 ? 1 : product.QtyMultiplier.GetValueOrDefault();
+                                        defaultQTY = product.MinQuantity == 0 ? 1 : product.MinQuantity.GetValueOrDefault();
+
+                                        maxQTY = (product.CalculateInventory) ? product.QuantityInStock ?? 0 : 100;
+
+                                        int qtySelectorValue = 0;
+                                        if (!product.CalculateInventory || product.QuantityInStock != 0)
+                                        {
+                                            for (var i = defaultQTY; i <= maxQTY; i++)
+                                            {
+                                                if (qtyMultiplier == 1)
+                                                {
+                                                    qtySelectorValue = i;
+                                                }
+                                                else if (i % qtyMultiplier == 0)
+                                                {
+                                                    qtySelectorValue = i;
+                                                }
+                                            }
+
+                                            //Set inventory rules for quantity boxes when page load
+                                            var itemMapping = await EbizClient.Product.GetProductItemMappingsAsync(Model.ProductId, product.ItemId);
+                                            var mappingQty = 0;
+                                            if(itemMapping.Quantity > 0) mappingQty = itemMapping.Quantity;
+
+                                            <input type="number" class="buttons-only qty-collector w-58 px-2 text-center float-left" onchange="recalculateSkuPrice(this,@product.ItemId)" id="qty_@product.ItemId" skuId="@product.ItemId" value="@mappingQty" min="0" max="@qtySelectorValue" maxQty="@qtySelectorValue" style="display: none;" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (string.IsNullOrEmpty(product.InventoryMessage))
+                                        {
+                                            <label>Out of stock</label>
+                                        }
+                                        else
+                                        {
+                                            <label>@product.InventoryMessage</label>
+                                        }
+                                    }
+                                    
+                                    @*<span onclick="orderEntry.qtyHandler(@product.ItemId,-1)" class="float-left minus-btn"><i class="far fa-minus font-weight-bold cursor-pointer"></i></span>
+                                    <input class="qty-collector w-58 px-2 text-center float-left" type="text" onkeyup="" min="0" max="@product.QuantityInStock" id="qty_@product.ItemId" skuId="@product.ItemId" value="0" />
+                                    <span onclick="orderEntry.qtyHandler(@product.ItemId,1)" class="plus-btn float-left"><i class="far fa-plus font-weight-bold cursor-pointer"></i></span>*@
+                                    @*<div class="test"><input type="number" disabled class="buttons-only qty-collector w-58 px-2 text-center float-left" id="qty_@product.ItemId" skuId="@product.ItemId" value="0" min="0" max="100" maxQty="100" style="display: none;" /></div>*@
+                                </td>
+                                    <td class="col text-right" data-label="Price/Units : &nbsp;">
+                                        <label>@price.ToString("C")</label> / @product.Units
+                                    </td>
+                                    @*<td class="col text-right grid-button-wrapper">
+                                        <span onclick="getItemAssets('doc',@product.ItemId)" title="Documents"><i class="far fa-file-alt"></i></span>
+                                        <span onclick="getItemAssets('article',@product.ItemId)" title="Articles"><i class="far fa-file"></i></span>
+                                        <span onclick="getItemAssets('part',@product.ItemId)" title="Alternate Part Numbers"><i class="fa fa-th"></i></span>
+                                        <span onclick="getItemAssets('fitment',@product.ItemId)" title="Fitments"><i class="fa fa-clone"></i></span>
+                                    </td>*@
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+            }
+        </div>
+    </div>
+</div>

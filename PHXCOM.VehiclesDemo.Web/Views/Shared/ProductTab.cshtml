@@ -1,0 +1,24 @@
+﻿@model List<PHXCOM.PlatformSDK.Models.Tab>
+
+@{
+    Layout = null;
+}
+@if (Model != null)
+{
+    var count = 7;
+    foreach (var item in Model)
+    {
+        <input id="tab_@count" class="tabs-pils" onclick="loadTabs(this)" prefer="content_@count" type="radio" name="tabs">
+        <label for="tab_@count">@item.title</label>
+        count++;
+    }
+
+    count = 7;
+    foreach (var item in Model)
+    {
+        <section id="content_@count" class="tabs-content-wrapper">
+            <div>@Html.Raw(item.content)</div>
+        </section>
+        count++;
+    }
+}
