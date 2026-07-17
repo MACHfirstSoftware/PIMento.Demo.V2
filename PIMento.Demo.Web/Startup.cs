@@ -43,8 +43,15 @@ namespace PIMento.Demo.Web
             });
             services.AddHttpContextAccessor();
 
-            var ebizClientId = AppConfig.GetRequired("Ebiz:ClientId", "EBIZ_CLIENT_ID");
-            var ebizClientSecret = AppConfig.GetRequired("Ebiz:ClientSecret", "EBIZ_CLIENT_SECRET");
+            var ebizClientId =
+                Environment.GetEnvironmentVariable("EBIZ_CLIENT_ID")
+                ?? Environment.GetEnvironmentVariable("PIMento_CLIENT_ID")
+                ?? AppConfig.GetRequired("Ebiz:ClientId", "EBIZ_CLIENT_ID");
+
+            var ebizClientSecret =
+                Environment.GetEnvironmentVariable("EBIZ_CLIENT_SECRET")
+                ?? Environment.GetEnvironmentVariable("PIMento_CLIENT_SECRET")
+                ?? AppConfig.GetRequired("Ebiz:ClientSecret", "EBIZ_CLIENT_SECRET");
             EbizClient.Connect(ebizClientId, ebizClientSecret);
 
         }
