@@ -38,105 +38,18 @@ namespace PIMento.Demo.Web.Controllers
         {
             EbizClient.Session.SetSlugSession(new Dictionary<string, string>());
 
-            List<Feature> features = new List<Feature>();
-            List<FilterProp> makes = new List<FilterProp>();
-
             try
             {
                 var featureResponse = await EbizClient.Feature.GetFeaturesAsync();
-                features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
+                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
+                List<FilterProp> makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
+                List<Feature> features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
+                return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
             }
             catch
             {
+                return View(new Tuple<List<Feature>, List<FilterProp>>(new List<Feature>(), new List<FilterProp>()));
             }
-
-            try
-            {
-                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, string.Empty, string.Empty);
-
-                var parsedMakes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content);
-                if (parsedMakes == null || parsedMakes.Count == 0)
-                {
-                    try
-                    {
-                        var wrappedPayload = JObject.Parse(res.Content)["value"]?.ToString();
-                        if (!string.IsNullOrWhiteSpace(wrappedPayload))
-                        {
-                            parsedMakes = JsonUtil.ListDeserialize<List<FilterProp>>(wrappedPayload);
-                        }
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                makes = parsedMakes ?? new List<FilterProp>();
-            }
-            catch
-            {
-            }
-
-            if (makes.Count == 0)
-            {
-                try
-                {
-                    var fallback = await EbizClient.Product.GetFilterProductAsync(true, -1, string.Empty);
-                    var payload = fallback.Content;
-                    if (!string.IsNullOrWhiteSpace(payload))
-                    {
-                        var token = JObject.Parse(payload)["value"];
-                        if (token is JArray array)
-                        {
-                            var distinctMakes = array
-                                .Select(x => x["make"]?.ToString())
-                                .Where(x => !string.IsNullOrWhiteSpace(x))
-                                .Distinct(StringComparer.OrdinalIgnoreCase)
-                                .OrderBy(x => x)
-                                .Select(x => new FilterProp { make = x })
-                                .ToList();
-
-                            if (distinctMakes.Count > 0)
-                            {
-                                makes = distinctMakes;
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            if (makes.Count == 0)
-            {
-                // Final safety net so the home picker is never blank when upstream APIs fail.
-                makes = new List<FilterProp>
-                {
-                    new FilterProp { make = "Club Car" },
-                    new FilterProp { make = "E-Z-GO" },
-                    new FilterProp { make = "Yamaha" }
-                };
-            }
-
-            return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
-        }
-
-        [HttpGet("/Parts")]
-        public IActionResult Parts()
-        {
-            return View("CategoryLanding", BuildCategoryLandingModel("Parts"));
-        }
-
-        [HttpGet("/Accessories")]
-        public IActionResult Accessories()
-        {
-            return View("CategoryLanding", BuildCategoryLandingModel("Accessories"));
-        }
-
-        [HttpGet("/Pro-Shop")]
-        public IActionResult ProShop()
-        {
-            return View("CategoryLanding", BuildCategoryLandingModel("Pro Shop"));
         }
 
         public async Task<IActionResult> Handler()
@@ -297,44 +210,6 @@ namespace PIMento.Demo.Web.Controllers
         public IActionResult Cache()
         {
             return View();
-        }
-
-        private CategoryLandingModel BuildCategoryLandingModel(string section)
-        {
-            var cards = new List<CategoryLandingCard>
-            {
-                new CategoryLandingCard
-                {
-                    Name = "Electrical",
-                    Description = "Batteries, chargers, controllers, and wiring essentials.",
-                    Link = "/Product/FilterProductView"
-                },
-                new CategoryLandingCard
-                {
-                    Name = "Wheels & Tires",
-                    Description = "Street and off-road wheel/tire options for popular fitments.",
-                    Link = "/Product/FilterProductView"
-                },
-                new CategoryLandingCard
-                {
-                    Name = "Body & Trim",
-                    Description = "Seats, enclosures, windshields, and exterior upgrades.",
-                    Link = "/Product/ProductSearchResults"
-                },
-                new CategoryLandingCard
-                {
-                    Name = "Performance",
-                    Description = "Lift kits, suspension, braking, and drivetrain upgrades.",
-                    Link = "/Product/ProductSearchResults"
-                }
-            };
-
-            return new CategoryLandingModel
-            {
-                Section = section,
-                Summary = "Browse major categories and continue into product discovery while upstream category feeds are recovering.",
-                Cards = cards
-            };
         }
 
         [HttpPost("Home/FlushCache")]
