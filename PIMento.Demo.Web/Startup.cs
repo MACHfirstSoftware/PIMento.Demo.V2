@@ -84,6 +84,16 @@ namespace PIMento.Demo.Web
                     defaults: new { controller = "Home", action = "Index" });
 
                 endpoints.MapControllerRoute(
+                    name: "parts",
+                    pattern: "Parts",
+                    defaults: new { controller = "Home", action = "Catalog" });
+
+                endpoints.MapControllerRoute(
+                    name: "catalog",
+                    pattern: "Catalog",
+                    defaults: new { controller = "Home", action = "Catalog" });
+
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action}/{id?}");
 
