@@ -1,0 +1,261 @@
+﻿@model PHXCOM.PlatformSDK.Models.CurrentOrder
+@{
+    ViewData["Title"] = "SlidingCartList";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    string nocartItemClass = "";
+    if (Model.BillingInfo == null)
+    {
+        Model.BillingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
+    }
+
+    string disabled = "";
+    if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
+    {
+        disabled = "disabled";
+    }
+    Model.AllowCartItemChanges = true;
+    bool shortCart = ViewBag.ShortCart != null ? ViewBag.ShortCart : false;
+
+    bool isCart = Model.AllowCartItemChanges;
+
+    bool onlyTotal = ViewBag.OnlyTotal != null ? ViewBag.OnlyTotal : false;
+
+    if (isCart)
+    {
+        onlyTotal = true;
+    }
+
+    string isCartSuggestedVisible = "";
+
+    if (Model.OrderItems.Count == 0)
+    {
+        isCartSuggestedVisible = "d-none";
+    }
+    else
+    {
+        if (ViewBag.RecommendedProducts == null || ViewBag.RecommendedProducts.Count == 0)
+        {
+            isCartSuggestedVisible = "d-none";
+        }
+    }
+
+    string displayTrash = "";
+    if (Model.CurrentOrderStep != 1) displayTrash = "d-none";
+}
+<input type="hidden" id="hdnCartCount" value="@Model.OrderItems.Count" />
+<div class="head"><h2>Your Cart - ( @Model.OrderItems.Count )</h2><span class="close-icon" onclick="closeSlideCart()">X</span></div>
+
+<div class="contents">
+    @if (Model.OrderItems.Count > 0)
+    {
+        if (!shortCart)
+        {
+            @foreach (var item in Model.OrderItems)
+            {
+                <div class="col-12 px-0 d-inline-block">
+                    <div class="col-5 float-left px-0">
+                        @if (!string.IsNullOrEmpty(item.ItemImage))
+                        {
+                            <img src="@item.ItemImage" class="" />
+                        }
+                        else
+                        {
+                            <img src="@item.ProductImage" class="" />
+                        }
+
+                    </div>
+                    <div class="col-7 text-uppercase float-left pt-2">
+                        <div class=""><h4 title="@item.ProductName" style="width:90%;">@item.ProductName</h4><span class="close-icon @displayTrash" onclick="orderEntry.removeItem(@item.ItemId)"><i class="far fa-trash-alt text-danger"></i></span></div>
+                        @if (item.ItemColor != null)
+                        {<div class="mt-1"><span>color</span> : <span>@item.ItemColor</span></div>}
+                        @if (item.ItemSize != null)
+                        {<div><span>size</span> : <span>@item.ItemSize</span></div>}
+
+                        @if (item.ItemStyle != null)
+                        {
+                            <div><span>style</span> : <span>@item.ItemStyle</span></div>
+                        }
+                        @if (item.SelectedModifiers != null)
+                        {
+                            <br />
+                            foreach (var mod in item.SelectedModifiers)
+                            {
+                                <div><span>@mod.ModifierName</span> : <span>@mod.OptionName</span></div>
+                            }
+                        }
+                        @if (Model.AllowCartItemChanges)
+                        {
+                            <div class="text-right quantity-new-update">
+                                <div class="input-group quantity-selector float-left">
+                                    <div class="input-group-prepend">
+                                        <button style="min-width: 2.5rem" class="btn btn-minus" onclick="decrement(@item.ItemId, @item.LineUnitPrice,true)" type="button"><strong>−</strong></button>
+                                    </div>
+
+                                    <input type="text" class="buttons-only qty-collector px-2 text-center float-left" id="qty_@item.ItemId" skuId="@item.ItemId" value="@item.LineQty" min="1" max="@item.MaxQuantity" />
+
+                                    <div class="input-group-append">
+                                        <button style="min-width: 2.5rem" class="btn rounded-0 btn-outline-secondary btn-plus" onclick="increment(@item.ItemId, @item.LineUnitPrice,true)" type="button"><strong>+</strong></button>
+                                    </div>
+                                    <input type="number" class="buttons-only qty-collector px-2 text-center float-left" id="qty_@item.ItemId" skuId="@item.ItemId" value="@item.LineQty" min="1" max="@item.MaxQuantity" style="display: none;" />
+
+                                </div>
+
+                                @*<div class="mt-2 mt-md-3 d-inline-block w-100 w-sm-100 text-left">
+                                        <button onclick="orderEntry.changeItemQty(@item.ItemId,@item.LineUnitPrice,true)" class="btn btn-danger rounded-0 px-4 font-14px qty-update">Update</button>
+                                    </div>*@
+                            </div>
+                        }
+                        else
+                        {
+                            <label>@item.LineQty</label>
+                        }
+                        <div class="float-left font-weight-bold d-flex mt-0 cart-amount ml-3"><span class="pt-1"> @((item.LineTotal).Value.ToString("C")) </span></div>
+                    </div>
+                </div>
+                <hr />
+            }
+        }
+        else
+        {
+            @foreach (var item in Model.OrderItems)
+            {
+                <div class="col-12 px-0 d-inline-block">
+                    <div class="col-5 float-left px-0">
+                        <img src="@item.ProductImage" class="" />
+                    </div>
+                    <div class="col-7 text-uppercase float-left pt-2">
+                        <div class=""><h4>@item.ProductName</h4><span class="close-icon @displayTrash" onclick="orderEntry.removeItem(@item.ItemId)"><i class="far fa-trash-alt"></i></span></div>
+                        @if (item.SelectedModifiers != null)
+                        {
+                            <br />
+                            foreach (var mod in item.SelectedModifiers)
+                            {
+                                <div class="mt-1"><span>@mod.ModifierName</span> : <span>@mod.OptionName</span></div>
+                            }
+                        }
+                        <div class="float-right font-weight-bold d-flex mr-n3 mt-1"><span class="pt-3"> @((item.LineTotal).Value.ToString("C")) </span></div>
+                    </div>
+                </div>
+                <hr />
+            }
+        }
+        <div class="subtotal text-uppercase px-5 pt-3 text-center">
+            <div class="float-left"><h3>subtotal</h3></div>
+            <div class="float-right"><h3 class="font-weight-bold">@Model.SubTotal.ToString("C")</h3></div>
+
+            <a href="/Order/Cart" class="text-uppercase text-center font-weight-bold w-100 d-inline-block mt-4">View Cart</a>
+            <button class="add-to-cart mt-3 mb-2" onclick="cartEntry.cartCheckout()">CHECKOUT</button>
+            @if (onlyTotal || isCart)
+            {
+                <span class="text-uppercase text-center font-weight-bold">*shipping & taxes calculated at checkout</span>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="p-4 text-uppercase text-center"><h5 class="">Your cart is empty. <br />Please add items to your cart</h5></div>
+    }
+    <hr />
+    <div id="suggestedItems" class="text-center mt-3 pt-3">
+        <h4 class="text-center mb-4 @isCartSuggestedVisible">Suggested For You</h4>
+        <div class="suggested-item-wrapper d-inline-block w-100">
+            <div class="owl-carousel owl-theme suggested-item-carousel">
+                @if (ViewBag.RecommendedProducts != null)
+                {
+                    foreach (var product in ViewBag.RecommendedProducts as List<PHXCOM.PlatformSDK.Models.ProductSuggesions>)
+                    {
+                        <div class="item suggested-item">
+                            <a href="/products/@product.slug">
+                                <div class="suggesed-item">
+                                    <img src="@product.imageFull" />
+                                    <h5>@product.ProductName</h5>
+                                    <h6>@("$" + product.PricingLabel)</h6>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+
+                }
+
+
+                @*<div class="item suggested-item">
+                        <a href="/products/dontbanme-tee">
+                            <div class="suggesed-item">
+                                <img src="~/images/image 8.png" />
+                                <h5>Dont Ban Me - T-Shirt</h5>
+                                <h6>$ 22.00</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item suggested-item">
+                        <a href="/products/ibackblue-tee">
+                            <div class="suggesed-item">
+                                <img src="~/images/Cart-1.png" />
+                                <h5>I Back Blue - T-Shirt</h5>
+                                <h6>$ 21.95</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item suggested-item">
+                        <a href="/products/dontbanme-tee">
+                            <div class="suggesed-item">
+                                <img src="~/images/image 8.png" />
+                                <h5>Dont Ban Me - T-Shirt</h5>
+                                <h6>$ 22.00</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="item suggested-item">
+                        <a href="/products/ibackblue-tee">
+                            <div class="suggesed-item">
+                                <img src="~/images/Cart-1.png" />
+                                <h5>I Back Blue - T-Shirt</h5>
+                                <h6>$ 21.95</h6>
+                            </div>
+                        </a>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#bucketItemCount').html($('#hdnCartCount').val());
+    sessionStorage.setItem('cartCount', $('#hdnCartCount').val());
+
+    function decrement(id, price, isFromSlidingCart) {
+        var quantity = parseInt($('#divSlidingCart #qty_' + id + '').val());
+        if (quantity > 0) {
+            $('#divSlidingCart #qty_' + id + '').val(quantity - 1);
+        }
+        orderEntry.changeItemQty(id, price, isFromSlidingCart);
+    }
+
+    function increment(id, price, isFromSlidingCart) {
+        var quantity = parseInt($('#divSlidingCart #qty_' + id + '').val());
+        $('#divSlidingCart #qty_' + id + '').val(quantity + 1);
+        orderEntry.changeItemQty(id, price, isFromSlidingCart);
+    }
+
+    $('.suggested-item-carousel').owlCarousel({
+        loop: false,
+        margin: 10,
+        nav: true,
+        navText: ['<span class="far fa-arrow-alt-circle-left"></span>', '<span class="far fa-arrow-alt-circle-right"></span>'],
+        responsive: {
+            0: {
+                items: 1
+            },
+            600: {
+                items: 3
+            },
+            1000: {
+                items: 2
+            }
+        }
+    })
+</script>
+

@@ -1,0 +1,269 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+/*-- importing google fonts --*/
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300');
+@import url('https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+@import url('https://fonts.googleapis.com/css?family=Oswald');
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed");
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  /*margin-bottom: 60px;*/
+}
+/*.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; 
+}*/
+
+/*#quickMenuItemContainer div {
+    padding: 4px 14px;
+}
+
+    #quickMenuItemContainer div span {
+        font-family: 'Oswald', sans-serif;
+        cursor: pointer;
+        font-size: 14px;
+        color: #635454;
+    }
+
+        #quickMenuItemContainer div span:hover {
+            color: #eb2222 !important;
+        }
+
+#quickMenuItemContainer {
+    position: absolute;
+    height: auto;
+    min-width: 364px;
+    background-color: #f5f5f1;
+    z-index: 9;
+    display: none;
+    padding: 10px 2px;
+    right: 35px;
+    margin-top: 30px !important;
+    border-top: solid 5px #404749;
+    -webkit-transition: display 300ms ease-in;
+    -moz-transition: display 300ms ease-in;
+    -ms-transition: display 300ms ease-in;
+    -o-transition: display 300ms ease-in;
+    transition: display 300ms ease-in;
+    box-shadow: 0 0px 2px 0px #bebebe;
+    max-height:500px;
+    overflow:auto;
+}
+
+    #quickMenuItemContainer.menu-item-show {
+        display: block;
+        -webkit-transition: display 300ms ease-in;
+        -moz-transition: display 300ms ease-in;
+        -ms-transition: display 300ms ease-in;
+        -o-transition: display 300ms ease-in;
+        transition: display 300ms ease-in;
+        border-bottom: solid 3px #828282;
+    }*/
+
+/*.list-main-header {
+    font-size: 16px !important;
+    margin-bottom: 11px;
+    border-bottom: solid 1px #ccc;
+    width: 100%;
+    display: inline-block;
+    padding-bottom: 5px;
+    padding-top: 8px;
+    color: #a72e2e !important;
+
+    
+}
+    .list-main-header a {
+        color: #a72e2e !important;
+    }*/
+    .menu-btn {
+        border: 1.5px solid #e4e4e4;
+        padding: 2px 7px;
+        margin-top: -5px;
+        color: #4d4d4d;
+        border-radius: 2px;
+    }
+.filter-btn {
+    padding: 2px 4px;
+    margin-top: -5px;
+    color: #4d4d4d;
+    border-radius: 2px;
+    border: 1.5px solid #e4e4e4;
+    margin-left: 5px;
+}
+/*.menu-item-show div.rank_2 a {
+    color: #535353 !important;
+}
+.menu-item-show div.rank_3 a {
+    color: #aa8c8c !important
+}*/
+.home-icon {
+    float: right;
+    padding-right: 12px;
+    font-size: 20px;
+  
+    cursor: pointer;
+}
+    .home-icon a {
+        color: #404749;
+    }
+
+#cardType {
+    position: absolute;
+    right: 22px;
+    top: 35px;
+}
+
+#txt_cc_number {
+    letter-spacing: 2px;
+}
+
+@media only screen and (max-device-width: 767px) {
+    .custormize-text label {
+        z-index: 9;
+        width: 100%;
+        text-align: center;
+        font-family: 'Oswald', sans-serif;
+        font-size: 11px;
+    }
+    .custormize-text span {
+        cursor: pointer;
+        z-index: 99;
+    }
+        .custormize-text span i {
+            font-size: 15px;
+        }
+    .container main .content-empty-message {
+        
+        line-height: 21px !important;
+        font-size: 15px;
+        margin-top: 26px;
+    }
+}
+
+.tool {
+    position: relative !important;
+}
+
+    /*== common styles for both parts of tool tip ==*/
+    .tool::before,
+    .tool::after {
+        left: 50%;
+        opacity: 0;
+        position: absolute;
+        z-index: -100;
+    }
+
+    .tool:hover::before,
+    .tool:focus::before,
+    .tool:hover::after,
+    .tool:focus::after {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        z-index: 100;
+    }
+
+
+    /*== pointer tip ==*/
+    .tool::before {
+        border-style: solid;
+        border-width: 1em 0.75em 1em 0.75em;
+        border-color: transparent transparent #3E474F transparent;
+        bottom: -51%;
+        content: "";
+        margin-left: -0.5em;
+        transition: all .65s cubic-bezier(.84,-0.18,.31,1.26), opacity .65s .5s;
+        transform: scale(.6) translateY(-90%);
+    }
+
+    .tool:hover::before,
+    .tool:focus::before {
+        /*transition: all .65s cubic-bezier(.84,-0.18,.31,1.26) .2s;*/
+    }
+
+
+    /*== speech bubble ==*/
+    .tool::after {
+        background: #3E474F;
+        border-radius: .25em;
+        bottom: -200%;
+        color: #EDEFF0;
+        content: attr(data-tip);
+        margin-left: -4.75em;
+        padding: 1em;
+        transition: all .65s cubic-bezier(.84,-0.18,.31,1.26) .2s;
+        transform: scale(.6) translateY(50%);
+        width: 11em;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .tool:hover::after,
+    .tool:focus::after {
+        transition: all .65s cubic-bezier(.84,-0.18,.31,1.26);
+    }
+
+

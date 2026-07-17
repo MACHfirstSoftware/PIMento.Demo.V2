@@ -1,0 +1,136 @@
+﻿@model List<PHXCOM.PlatformSDK.Models.ProductCategorySearch>
+@{
+    ViewData["Title"] = "Application Filter Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Dictionary<string, string> breadCrumbs = ViewBag.breadCrumbs;
+    var appYear = ViewBag.appYear;
+    var appModel = ViewBag.appModel;
+    var appMake = ViewBag.appMake;
+    var redirectSlug = "";
+    var displayResultsMessage = "";
+    var applicationList = new List<PHXCOM.PlatformSDK.Models.ProductCategorySearch>();
+    KeyValuePair<string, string> topBreadCrumbElement = new KeyValuePair<string, string>();
+    if (breadCrumbs.Count > 0)
+    {
+        KeyValuePair<string, string> lastBreadCrumbElement = breadCrumbs.FirstOrDefault();
+        topBreadCrumbElement = breadCrumbs.LastOrDefault();
+        redirectSlug = string.Format("/{0}", lastBreadCrumbElement.Key);
+    }
+    else
+    {
+        redirectSlug = "/";
+    }
+}
+
+@*<div id="syndicationBreadcrumbContainer" class="breadcrumbs breadcrumbs-height">
+        @await Html.PartialAsync("BreadCrumbView", breadCrumbs)
+    </div>*@
+<div class="wrapper-catelog">
+    <div class="container">
+        @if (breadCrumbs.Count > 0 && !string.IsNullOrEmpty(topBreadCrumbElement.Value))
+        {
+            if (topBreadCrumbElement.Value.ToLower() == "inventory")
+            {
+                displayResultsMessage = "Showing Inventories for your {0} {1} {2}";
+            }
+            else if (topBreadCrumbElement.Value.ToLower() == "parts & accessories")
+            {
+                displayResultsMessage = "Showing Parts & Accessories for your {0} {1} {2}";
+            }
+        }
+        else
+        {
+            displayResultsMessage = "Showing Applications for your {0} {1} {2}";
+        }
+
+        <div class="rounded-0  d-inline-block w-100 mt-5 py-4 px-3 bg-light-greay">
+            <div class="col-md-4 d-inline-block float-left">
+                <label>Select Make </label>
+                <select class="form-control rounded-0" id="ddlMakeCustomization" onchange="getCumstomizationData(this, 'make')"><option> --Make-- </option></select>
+            </div>
+            <div class="col-md-4 d-inline-block float-left">
+                <label>Select Model </label>
+                <select class="form-control rounded-0" id="ddlModelCustomization" onchange="getCumstomizationData(this, 'model')" disabled=""><option>--Model--</option></select>
+            </div>
+            <div class="col-md-4 d-inline-block float-left">
+                <label>Select Year </label>
+                <select class="form-control rounded-0" id="ddlYearCustomization" onchange="setCumstomizationData(this)" disabled><option>--Year--</option></select>
+            </div>
+
+            <div class="col-md-12 d-inline-block float-left mt-3">
+                <button id="customize_confirm_selector1" onclick="redirectWithCustomization()" type="button" class="common-orange-button px-5 float-right" style="display:inline">Search</button>
+            </div>
+
+
+               
+
+            </div>
+            <div class="col-12 mt-4 pt-3">
+                <h1 class="page-header text-left w-100 d-inline-block"><span class="float-left">@string.Format(displayResultsMessage, appYear, appMake, appModel)</span> <a href="@redirectSlug" onclick="return removeFilter()" class="pl-4 remove-filter float-right"><i class="far fa-times-circle mr-1"></i> Remove Filter</a></h1>
+            </div>
+            <div class="mt-3 mb-5 d-inline-block w-100">
+                @if (Model != null && Model.Count > 0)
+                {
+                    if (breadCrumbs.Count > 0 && !string.IsNullOrEmpty(topBreadCrumbElement.Value))
+                    {
+                        applicationList = Model.Where(c => c.TopCategoryName.ToLower() == topBreadCrumbElement.Value.ToLower()).ToList();
+                    }
+                    else
+                    {
+                        applicationList = Model;
+                    }
+
+                    if (applicationList.Count > 0)
+                    {
+                        foreach (var item in applicationList)
+                        {
+
+                            <div class="col-md-6 col-lg-3 col-12 list-item mb-1 text-center pb-md-3 pb-5 mt-2 mt-md-0 d-inline-block float-left">
+                                <a href="/@item.Slug" class="d-inline-block">
+                                    <div class="wrapper-image">
+                                        @if (item.Image != null)
+                                        {
+                                            <img src="@item.Image" class="w-100" />
+                                        }
+                                        else
+                                        {
+                                            <img src="~/images/no-image.png" class="no-image w-100" />
+                                        }
+                                    </div>
+                                    <h2 class="mt-5 mt-md-0">@item.CategoryName</h2>
+                                </a>
+                            </div>
+
+                        }
+                    }
+                    else
+                    {
+                        <h4 class="d-inline-block w-100 content-empty-message no-product-msg"> Sorry.  We currently do not have any category products for this application.</h4>
+                        <div class="text-center w-100 d-inline-block mt-4 pt-2 pb-1">
+                            <a href="/Golf-Cart-Parts-Accessories" class="common-orange-button px-4"><i class="fas fa-list-ul"></i> Shop All</a>
+                        </div>
+                    }
+
+                }
+                else
+                {
+                    <h4 class="d-inline-block w-100 content-empty-message no-product-msg"> Sorry.  We currently do not have any category products for this application.</h4>
+                    <div class="text-center w-100 d-inline-block mt-4 pt-2 pb-1">
+                        <a href="/Golf-Cart-Parts-Accessories" class="common-orange-button px-4"><i class="fas fa-list-ul"></i> Shop All</a>
+                    </div>
+                }
+            </div>
+        </div>
+</div>
+@*@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")*@
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setCookieValuesToAppProp();
+            getCumstomizationData(null, '', 'auto');
+        });
+    </script>
+}
+

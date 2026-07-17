@@ -1,0 +1,201 @@
+﻿<style>
+    #customizationMenuContainer.modal-attribute-selector .btn-select {
+        margin: auto;
+        background-color: #959697 !important;
+        border: none;
+        color: #fff;
+        padding: 11px 40px !important;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+        #customizationMenuContainer.modal-attribute-selector .btn-select:hover {
+            background-color: #707172 !important;
+        }
+
+    #customizationMenuContainer .wrapper-product-filters {
+        background-color: #ffffff;
+    }
+
+    #customizationMenuContainer.modal-attribute-selector .modal-title {
+        margin-bottom: 14px;
+    }
+
+    #customizationMenuContainer .wrapper-product-filters label {
+        font-size: 17px;
+        color: #000000;
+    }
+
+    #customizationMenuContainer .wrapper-product-filters #lbCurrentApplication label {
+        font-family: 'Oswald', sans-serif;
+        color: #b5b5b5 !important;
+    }
+
+    #customizationMenuContainer .wrapper-product-filters select {
+        height: 40px !important;
+    }
+</style>
+
+<div class="modal" tabindex="-1" role="dialog" id="modalDispplayImageInfo">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body pt-0">
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Item Fitments Modal*@
+<div class="modal general-popup modal-attribute-selector " tabindex="-1" role="dialog" id="modalItemAssetContainer">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 id="itemAssetHdr" class="wrapper-product-header mb-0 border-bottom-0"></h5>
+                </div>
+                <button type="button" class="close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 pl-0 pr-0 form-group wrapper-content">
+                    <div id="itemAssetContainer">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="modal_footer_Container">
+                <button type="button" class="common-orange-button px-5 btn-color-greay " data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*Application Fitments Modal*@
+<div class="modal general-popup modal-attribute-selector " tabindex="-1" role="dialog" id="modalApplicationFitmentAssetContainer">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 id="applicationFitmentHdr" class="wrapper-product-header mb-0 border-bottom-0"></h5>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 pl-0 pr-0 form-group wrapper-content">
+                    <div id="applicationFitmentAssetContainer">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="modal_footer_Container">
+                <button type="button" class="common-orange-button px-5 btn-color-greay " data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*My Account Vehicle Modal*@
+<div class="modal general-popup modal-attribute-selector " tabindex="-1" role="dialog" id="modalAccountMyVehicleContainer">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 id="myVehicleHdr" class="wrapper-product-header mb-0 border-bottom-0">Search & Add Vehicles</h5>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 pl-0 pr-0 form-group wrapper-content">
+                    <div id="myVehicleContainer" class="col-12 form-group d-inline-block px-0 px-md-3 mt-3">
+                        <div class="col-12 col-md-4 float-left select">
+                            <h6 class="text-uppercase mb-3">select make</h6>
+                            <select class="form-control" id="ddlMakeCustomization1" onchange="getMyAccountCumstomizationData(this, 'make')">
+                                <option>--Make--</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4 mt-2 mt-md-0 float-left select">
+                            <h6 class="text-uppercase mb-3">select Model</h6>
+                            <select class="form-control" id="ddlModelCustomization1" onchange="getMyAccountCumstomizationData(this, 'model')" disabled>
+                                <option>--Model--</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4 mt-2 mt-md-0 float-left select">
+                            <h6 class="text-uppercase mb-3">select year</h6>
+                            <select class="form-control" id="ddlYearCustomization1" onchange="setCumstomizationData1(this)" disabled>
+                                <option>--Year--</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12 col-sm-12 mt-lg-0 py-3 d-inline-block px-0 px-lg-3" id="divVehicleDetails"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="modal_footer_Container">
+                <button type="button" class="common-orange-button px-5 btn-color-greay " data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal general-popup modal-attribute-selector" tabindex="-1" role="dialog" id="customizationMenuContainer">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="text-left d-inline-block pl-3">
+                    <h5 class="wrapper-product-header mb-0 border-bottom-0">Select Application</h5>
+                </div>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 px-0 col-md-12 col-sm-12 form-group mobile-controlled wrapper-product-filters d-inline-block">
+                    <div class="col-lg-12 mobile-controlled px-0">
+                        <div class="pl-3" id="lbCurrentApplication">
+                            <label></label>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-sm-12 col-xs-12 mobile-controlled pl-0 pr-0">
+
+                            <div class="col-lg-4 col-md-12 col-sm-12 float-left d-inline-block  form-group">
+                                <label>Select Make </label>
+                                <select class="form-control" id="ddlMakeCustomization" onchange="getCumstomizationData(this, 'make')"><option> --Make-- </option></select>
+                            </div>
+
+                            <div class="col-lg-4 col-md-12 col-sm-12 float-left d-inline-block form-group">
+                                <label>Select Model </label>
+                                <select class="form-control" id="ddlModelCustomization" onchange="getCumstomizationData(this, 'model')" disabled=""><option>--Model--</option></select>
+                            </div>
+                            <div class="col-lg-4 col-md-12 col-sm-12 float-left d-inline-block form-group" id="yearCustomizationContainer">
+                                <label>Select Year </label>
+                                <select class="form-control" id="ddlYearCustomization" onchange="setCumstomizationData(this)" disabled><option>--Year--</option></select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="modal_footer_Container">
+                <div class="col-lg-12 col-md-12 col-sm-12 d-inline-block  text-right">
+
+                    @*<a id="customize_confirm_selector" data-dismiss="modal" class="common-orange-button px-5" style="display:none">Search</a>*@
+                    <button id="" onclick="resetCustomization()" type="button" data-dismiss="modal" class="common-orange-button px-5 btn-color-greay float-left">Clear</button>
+                    <button id="customize_confirm_selector" onclick="redirectWithCustomization()" type="button" data-dismiss="modal" class="common-orange-button px-5 float-right" style="display:none">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

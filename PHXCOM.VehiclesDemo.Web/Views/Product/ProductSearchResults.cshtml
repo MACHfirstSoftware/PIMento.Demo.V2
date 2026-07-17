@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "Product Search Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var key = ViewBag.Key;
+}
+    <input type="hidden" id="hdnSearchKey" value="@key" />
+@*<div id="syndicationBreadcrumbContainer" class="breadcrumbs breadcrumbs-height">
+        @await Html.PartialAsync("BreadCrumbView", breadCrumbs)
+    </div>*@
+<div class="wrapper-catelog">
+    
+</div>
+@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let queryString = window.location.search;
+            let urlParams = new URLSearchParams(queryString);
+            let key = urlParams.get('searchkey');
+            triggerSearch(key);
+        });
+    </script>
+}

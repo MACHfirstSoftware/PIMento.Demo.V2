@@ -1,0 +1,35 @@
+﻿@{
+
+    int cartCount = EbizClient.Order.GetCurrentOrder()?.OrderItems.Count() ?? 0;
+}
+<div class="float-left mr-2 mt-2 d-none d-sm-block" onclick="SearchProducts()"><i class="fas fa-search"></i></div>
+@*<div class="float-left mr-3 mt-2" onclick="getQuickMenuSyndication()"><i class="fa fa-bars"></i></div>*@
+@*<div class="float-left mr-3 mt-2 filters position-relative" onclick="getCumstomization()"><i class="fa fa-circle icon-green d-none"></i> <img width="15" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIC0yOCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBjbGFzcz0iIj48Zz48cGF0aCBkPSJtNDY0LjMwMDc4MSAyMTkuMjE4NzUtNjIuNjUyMzQzLTQ4LjMyNDIxOWMtMy4wMTE3MTktMi4zMjAzMTItNi4zODI4MTMtNC05LjkyOTY4OC00Ljk5MjE4N2wtMzUuMjM4MjgxLTEwNi43ODkwNjNoNjcuODEyNWM2LjU4MjAzMSAwIDExLjkxNzk2OS01LjMzNTkzNyAxMS45MTc5NjktMTEuOTE3OTY5IDAtMjYuMDY2NDA2LTIxLjEyODkwNy00Ny4xOTUzMTItNDcuMTk1MzEzLTQ3LjE5NTMxMmgtMzQxLjgyMDMxM2MtMjYuMDY2NDA2IDAtNDcuMTk1MzEyIDIxLjEyODkwNi00Ny4xOTUzMTIgNDcuMTk1MzEyIDAgNi41ODIwMzIgNS4zMzU5MzggMTEuOTE3OTY5IDExLjkxNzk2OSAxMS45MTc5NjloNzAuMDExNzE5djEwNi4zMzk4NDRoLTYuNDc2NTYzYy0xNy40NjQ4NDQgMC0zMS42NzU3ODEgMTQuMTc1NzgxLTMxLjY3NTc4MSAzMS41OTc2NTZ2MjZoLTE0LjY1NjI1Yy0xNi4wNjI1IDAtMjkuMTIxMDk0IDEzLjA1ODU5NC0yOS4xMjEwOTQgMjkuMTEzMjgxdjExNi4wNDY4NzZjMCAxNi4wNjY0MDYgMTMuMDU4NTk0IDI5LjEyODkwNiAyOS4xMjEwOTQgMjkuMTI4OTA2aC4zMjAzMTJjMC01MS40NDE0MDYgNDEuNzMwNDY5LTkzLjEzNjcxOSA5My4xOTkyMTktOTMuMTM2NzE5czkzLjE4NzUgNDEuNjk5MjE5IDkzLjE4NzUgOTMuMTM2NzE5aDkwLjM2MzI4MWMwLTUxLjQ0MTQwNiA0MS43MzA0NjktOTMuMTM2NzE5IDkzLjE5OTIxOS05My4xMzY3MTkgNTAuOTE3OTY5IDAgOTIuMjg5MDYzIDQwLjgwODU5NCA5My4xNjc5NjkgOTEuNDgwNDY5IDExLjMxMjUtMy45OTIxODggMTkuNDQxNDA2LTE0Ljc5Njg3NSAxOS40NDE0MDYtMjcuNDcyNjU2di01OC4yMzA0NjljMC0zNS4zMTI1LTE2LjUtNjYuNzA3MDMxLTQ3LjY5OTIxOS05MC43NjE3MTl6bS0xNzAuOTIxODc1IDg2LjE0MDYyNWMtMS43MzgyODEgMy4zNTE1NjMtNS4xNjAxNTYgNS40Mzc1LTguOTM3NSA1LjQzNzVoLTQzLjg4MjgxMmMtNS41NDY4NzUgMC0xMC4wNTg1OTQtNC41MTk1MzEtMTAuMDU4NTk0LTEwLjA3ODEyNXYtNDguNTU0Njg4YzAtMTYuMDU0Njg3LTEzLjA3MDMxMi0yOS4xMTMyODEtMjkuMTIxMDk0LTI5LjExMzI4MWgtNTEuMjk2ODc1di0yNmMwLTE3LjQyMTg3NS0xNC4yMTA5MzctMzEuNTk3NjU2LTMxLjY3OTY4Ny0zMS41OTc2NTZoLTYuNDcyNjU2di0xMDYuMzM5ODQ0aDIxMi45NjA5MzdsMzcuODY3MTg3IDExNC43NTc4MTNjLTEuOTg4MjgxIDIuMDkzNzUtMy42NzE4NzQgNC40OTIxODctNC45ODgyODEgNy4xNDg0Mzd6bTAgMCIgZGF0YS1vcmlnaW5hbD0iIzAwMDAwMCIgY2xhc3M9ImFjdGl2ZS1wYXRoIiBkYXRhLW9sZF9jb2xvcj0iIzAwMDAwMCIgc3R5bGU9ImZpbGw6I0ZGRkZGRiI+PC9wYXRoPjxwYXRoIGQ9Im0xMjIuNjQwNjI1IDMzOC42Njc5NjljLTMyLjQyMTg3NSAwLTU4LjcxMDkzNyAyNi4yNjE3MTktNTguNzEwOTM3IDU4LjY3MTg3NSAwIDMyLjM5ODQzNyAyNi4yODkwNjIgNTguNjYwMTU2IDU4LjcxMDkzNyA1OC42NjAxNTYgMzIuNDE3OTY5IDAgNTguNjk5MjE5LTI2LjI2MTcxOSA1OC42OTkyMTktNTguNjYwMTU2IDAtMzIuNDEwMTU2LTI2LjI4MTI1LTU4LjY3MTg3NS01OC42OTkyMTktNTguNjcxODc1em0xNSA2NS4yNzczNDNjMCA4LjI2OTUzMi02LjcxODc1IDE0Ljk2NDg0NC0xNSAxNC45NjQ4NDQtOC4yODkwNjMgMC0xNS02LjY5NTMxMi0xNS0xNC45NjQ4NDR2LTEzLjIyMjY1NmMwLTguMjYxNzE4IDYuNzEwOTM3LTE0Ljk2NDg0NCAxNS0xNC45NjQ4NDQgOC4yODEyNSAwIDE1IDYuNzAzMTI2IDE1IDE0Ljk2NDg0NHptMCAwIiBkYXRhLW9yaWdpbmFsPSIjMDAwMDAwIiBjbGFzcz0iYWN0aXZlLXBhdGgiIGRhdGEtb2xkX2NvbG9yPSIjMDAwMDAwIiBzdHlsZT0iZmlsbDojRkZGRkZGIj48L3BhdGg+PHBhdGggZD0ibTM5OS4zOTA2MjUgMzM4LjY2Nzk2OWMtMzIuNDIxODc1IDAtNTguNjk5MjE5IDI2LjI2MTcxOS01OC42OTkyMTkgNTguNjcxODc1IDAgMzIuMzk4NDM3IDI2LjI3NzM0NCA1OC42NjAxNTYgNTguNjk5MjE5IDU4LjY2MDE1NiAzMi40MTc5NjkgMCA1OC42OTkyMTktMjYuMjYxNzE5IDU4LjY5OTIxOS01OC42NjAxNTYgMC0zMi40MTAxNTYtMjYuMjgxMjUtNTguNjcxODc1LTU4LjY5OTIxOS01OC42NzE4NzV6bTE1IDY1LjI3NzM0M2MwIDguMjY5NTMyLTYuNzE4NzUgMTQuOTY0ODQ0LTE1IDE0Ljk2NDg0NHMtMTUtNi42OTUzMTItMTUtMTQuOTY0ODQ0di0xMy4yMjI2NTZjMC04LjI2MTcxOCA2LjcxODc1LTE0Ljk2NDg0NCAxNS0xNC45NjQ4NDRzMTUgNi43MDMxMjYgMTUgMTQuOTY0ODQ0em0wIDAiIGRhdGEtb3JpZ2luYWw9IiMwMDAwMDAiIGNsYXNzPSJhY3RpdmUtcGF0aCIgZGF0YS1vbGRfY29sb3I9IiMwMDAwMDAiIHN0eWxlPSJmaWxsOiNGRkZGRkYiPjwvcGF0aD48L2c+IDwvc3ZnPg==" /></div>*@
+@if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
+{
+   
+}
+else
+{
+    @*<a class="float-left mr-2 mt-2 position-relative" refer="employment.html" href="/Account/Login"><i class="fa fa-wrench text-white"></i></a>*@
+}
+@*<div class="float-left mr-3 mt-2 position-relative"><i class="fa fa-wrench"></i></div>*@
+<div class="cart-section float-right">
+    <div class="labels float-left" onclick="openSlideCart()">
+        <div class="cursor-pointer"><i class="fas fa-shopping-cart float-left mr-2"></i> <span class="float-left"></span></div>
+    </div>
+    <div onclick="openSlideCart()" class="amount float-left bg-white cursor-pointer" id="bucketItemCount">@cartCount</div>
+</div>
+
+@*<div class="float-right my-account">
+        @if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
+        {
+            <a class="nav-link text-white float-left" refer="" href="/Account"><i class="fas fa-user-circle" style="font-size:15px;"></i></a>
+        }
+        else
+        {
+            <a class="nav-link text-white float-left" refer="employment.html" href="/Account/Login"><i class="fa fa-user"></i></a>
+        }
+    </div>*@
+
+

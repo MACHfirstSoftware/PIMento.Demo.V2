@@ -1,0 +1,18 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/master.css",
+    "inputFile": "wwwroot/css/master.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/_presets.css",
+    "inputFile": "wwwroot/css/_presets.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/_reset.css",
+    "inputFile": "wwwroot/css/_reset.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/SiteStyles.css",
+    "inputFile": "wwwroot/css/SiteStyles.scss"
+  }
+]

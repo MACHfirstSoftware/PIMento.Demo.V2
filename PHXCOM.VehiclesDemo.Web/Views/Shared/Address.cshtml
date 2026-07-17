@@ -1,0 +1,66 @@
+﻿@model PHXCOM.PlatformSDK.Models.UserInfo
+@{
+    Layout = null;
+    var countries = ViewBag.Countries as List<PHXCOM.PlatformSDK.Models.Country>;
+}
+
+<div class="col-12 form-group">
+    <form id="frmOrderAddress">
+        <div class="row">
+            <div class="form-group col-12">
+                <div class="col-md-6 float-left mb-3 mb-md-0">
+                    <input type="text" value="@Model.FirstName" required id="txtFirstName" name="txtFirstName" placeholder="First Name" class="form-control" />
+                </div>
+                <div class="col-md-6 float-left mb-3 mb-md-0">
+                    <input type="text" value="@Model.LastName" required id="txtLastName" name="txtLastName" placeholder="Last Name" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group col-12">
+                <div class="col-md-12 float-left mb-3">
+                    <input type="text" value="@Model.Address1" required id="txtAddress1" name="txtAddress1" placeholder="Address" class="form-control" />
+                </div>
+                <div class="col-md-12 float-left  mb-3 mb-md-0">
+                    <input type="text" value="@Model.Address2" id="txtAddress2" name="txtAddress2" placeholder="Apartment or Suite" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group col-12 mb-md-0">
+                <div class="col-md-12 float-left  mb-3">
+                    <input type="text" value="@Model.City" required id="txtCity" name="txtCity" placeholder="City" class="form-control" />
+                </div>
+                <div class="col-md-4 float-left  mb-3 mb-md-0">
+                    <select class="form-control required" id="ddlCountry" name="ddlCountry" onchange="generalHandlers.getStatesByCountry()">
+                        <option value="">--Select Country--</option>
+                        @if (countries != null)
+                        {
+                            foreach (var item in countries)
+                            {
+                                if (item.CountryCode == Model.CountryCode)
+                                {
+                                    <option selected value="@item.CountryId" code="@item.CountryCode">@item.CountryName</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.CountryId" code="@item.CountryCode">@item.CountryName</option>
+                                }
+                            }
+                        }
+                    </select>
+                    @*@Html.DropDownListFor(model => model.CountryId, new SelectList(ViewBag.Countries, "CountryId", "CountryName", Model.CountryId), "--Select--", new { @class = "form-control required", id = "ddlCountry", name = "ddlCountry", onchange = "orderEntry.getStatesByCountry()" })*@
+                </div>
+                <div class="col-md-4 float-left  mb-3 mb-md-0">
+                    <select id="ddlState" name="ddlState" required placeholder="State" class="form-control required">
+                        <option value="">--Select State/Territory--</option>
+                    </select>
+                </div>
+                <div class="col-md-4 float-left  mb-3 mb-md-0">
+                    <input type="text" value="@Model.PostalCode" required id="txtPostalCode" name="txtPostalCode" placeholder="Postal Code" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+
+

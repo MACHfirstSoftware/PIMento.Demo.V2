@@ -1,0 +1,27 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "404";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-12 d-inline-block w-100 text-center p-5 wrapper-404">
+
+    <div class="w-100 d-inline-block">
+        <h2 class="oops mb-5">Oops..!</h2>
+        <img src="~/images/error-404.png" class="mw-100" width="350" />
+        @*<h3 class="w-100 mt-1 d-inline-block">Page Not Found</h3>*@
+
+        <label class="w-100 d-inline-block mt-1">
+            The page you are looking for might have been removed, had its name changed or is temporarily unavailable
+        </label>
+
+        <div class="w-100 d-inline-block mt-4">
+            <a href="../" class="return-to-home">Return to  Home page</a>
+        </div>
+
+    </div>
+
+
+
+</div>
+

@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="EbizSDK\**" />
+    <Content Remove="EbizSDK\**" />
+    <EmbeddedResource Remove="EbizSDK\**" />
+    <None Remove="EbizSDK\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\css\master.scss~RF58c910.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\content.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bootstrap" Version="4.5.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="RestSharp" Version="106.6.10" />
+    <PackageReference Include="Twilio" Version="5.37.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Category\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PHXCOM.PlatformSDK">
+      <HintPath>..\..\PHXCOM.PlatformSDK\PHXCOM.PlatformSDK\PHXCOM.PlatformSDK\bin\Debug\netcoreapp3.1\PHXCOM.PlatformSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="PHXCOM.PlatformSDK">
+      <HintPath>SDK\PHXCOM.PlatformSDK.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+
+
+</Project>
