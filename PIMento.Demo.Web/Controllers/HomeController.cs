@@ -38,18 +38,55 @@ namespace PIMento.Demo.Web.Controllers
         {
             EbizClient.Session.SetSlugSession(new Dictionary<string, string>());
 
+            var features = new List<Feature>();
+            var makes = new List<FilterProp>();
+
             try
             {
                 var featureResponse = await EbizClient.Feature.GetFeaturesAsync();
-                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
-                List<FilterProp> makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
-                List<Feature> features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
-                return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
+                features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
             }
             catch
             {
-                return View(new Tuple<List<Feature>, List<FilterProp>>(new List<Feature>(), new List<FilterProp>()));
             }
+
+            try
+            {
+                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
+                makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
+
+                if (makes.Count == 0 && !string.IsNullOrWhiteSpace(res.Content))
+                {
+                    var wrapped = JObject.Parse(res.Content)["value"]?.ToString();
+                    if (!string.IsNullOrWhiteSpace(wrapped))
+                    {
+                        makes = JsonUtil.ListDeserialize<List<FilterProp>>(wrapped) ?? new List<FilterProp>();
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
+        }
+
+        [HttpGet("/Parts")]
+        public IActionResult Parts()
+        {
+            return Redirect("/Product/FilterProductView");
+        }
+
+        [HttpGet("/Accessories")]
+        public IActionResult Accessories()
+        {
+            return Redirect("/Product/ProductSearchResults?searchkey=accessories");
+        }
+
+        [HttpGet("/Pro-Shop")]
+        public IActionResult ProShop()
+        {
+            return Redirect("/Product/ProductSearchResults?searchkey=pro-shop");
         }
 
         public async Task<IActionResult> Handler()
