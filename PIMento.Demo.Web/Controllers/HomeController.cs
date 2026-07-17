@@ -68,6 +68,27 @@ namespace PIMento.Demo.Web.Controllers
             {
             }
 
+            if (makes.Count == 0)
+            {
+                try
+                {
+                    var apps = EbizClient.Application.GetApplications().ContentObject as List<Application>;
+                    if (apps != null && apps.Count > 0)
+                    {
+                        makes = apps
+                            .Select(a => a.Make)
+                            .Where(m => !string.IsNullOrWhiteSpace(m))
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .OrderBy(m => m)
+                            .Select(m => new FilterProp { make = m })
+                            .ToList();
+                    }
+                }
+                catch
+                {
+                }
+            }
+
             return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
         }
 
