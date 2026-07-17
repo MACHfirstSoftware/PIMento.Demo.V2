@@ -159,7 +159,6 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
         //[AnalyticFilter]
 
         [HttpGet("/Parts")]
-        [HttpGet("/parts")]
         public IActionResult Parts()
         {
             return Redirect("/Accessories");
