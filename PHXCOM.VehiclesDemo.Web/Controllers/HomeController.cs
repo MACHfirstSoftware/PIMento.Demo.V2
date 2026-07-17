@@ -158,6 +158,12 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
         //[HttpGet("/")]
         //[AnalyticFilter]
 
+        [HttpGet("/Parts")]
+        public IActionResult PartsAlias()
+        {
+            return RedirectPermanent("/Golf-Cart-Parts-Accessories");
+        }
+
         public async Task<IActionResult> Catalog()
         {
             //EbizClient.Session.SetSlugSession(new List<string>());
