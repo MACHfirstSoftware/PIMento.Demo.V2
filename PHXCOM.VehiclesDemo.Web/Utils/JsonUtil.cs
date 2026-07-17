@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace PHXCOM.VehiclesDemo.Web.Utils
 {
@@ -10,22 +7,22 @@ namespace PHXCOM.VehiclesDemo.Web.Utils
     {
         public static T ListDeserialize<T>(string json)
         {
-            if (string.IsNullOrEmpty(json)) return default(T);
-            dynamic obj = JsonConvert.DeserializeObject<dynamic>(json);
-            return Deserialize<T>(Serialize(obj.value));
+            if (string.IsNullOrWhiteSpace(json)) return default;
+
+            var parsed = JObject.Parse(json);
+            var valueToken = parsed["value"];
+            return valueToken == null ? default : valueToken.ToObject<T>();
         }
 
         public static T ListDeserializeObj<T>(string json)
         {
-            if (string.IsNullOrEmpty(json)) return default(T);
-            dynamic obj = JsonConvert.DeserializeObject<dynamic>(json);
-            return Deserialize<T>(Serialize(obj));
+            if (string.IsNullOrWhiteSpace(json)) return default;
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         public static T Deserialize<T>(string json)
         {
-            T entity = JsonConvert.DeserializeObject<T>(json);
-            return entity;
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         public static string Serialize(object obj)

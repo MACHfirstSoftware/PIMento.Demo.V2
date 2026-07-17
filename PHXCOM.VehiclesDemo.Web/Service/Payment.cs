@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using PHXCOM.PlatformSDK.Models;
+﻿using PHXCOM.PlatformSDK.Models;
 using System;
+using System.Net.Http;
+using System.Text;
 using System.IO;
-using System.Net;
 using System.Xml;
 
 namespace PHXCOM.VehiclesDemo.Web.Service
@@ -11,6 +11,7 @@ namespace PHXCOM.VehiclesDemo.Web.Service
     public class Payment
     {
         private static string ApiKey => Utils.AppConfig.GetRequired("Payments:ApiKey", "PAYMENTS_API_KEY");
+        private static readonly HttpClient HttpClient = new HttpClient();
         //internal static IHttpContextAccessor _httpContextAccessor;
         //public Payment(IHttpContextAccessor _httpContextAccessor)
         //{
@@ -333,9 +334,7 @@ namespace PHXCOM.VehiclesDemo.Web.Service
                     XmlNodeList response = xDoc.GetElementsByTagName("result");
                     XmlNodeList transaction = xDoc.GetElementsByTagName("transaction-id");
 
-                    var data = responseFromServer;
                     var result = response[0].InnerText;
-                    var transactionId = transaction[0].InnerText;
                     responseReader.Close();
                     return new Tuple<int, string>(Convert.ToInt32(result), transaction[0].InnerText);
 
@@ -343,7 +342,7 @@ namespace PHXCOM.VehiclesDemo.Web.Service
                 return res;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return res;
             }
@@ -351,43 +350,16 @@ namespace PHXCOM.VehiclesDemo.Web.Service
 
         private static string sendXMLRequest(XmlDocument xmlRequest)
         {
-            //  ServicePointManager.CertificatePolicy = new Program();
-            string uri = "https://secure.networkmerchants.com/api/v2/three-step";
+            const string uri = "https://secure.networkmerchants.com/api/v2/three-step";
+            var requestBody = xmlRequest.OuterXml;
+            using var request = new HttpRequestMessage(HttpMethod.Post, uri)
+            {
+                Content = new StringContent(requestBody, Encoding.UTF8, "text/xml")
+            };
 
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            WebRequest req = WebRequest.Create(uri);
-            //req.Proxy = WebProxy.GetDefaultProxy(); // Enable if using proxy
-            req.Method = "POST";        // Post method
-            req.ContentType = "text/xml";     // content type
-                                              // Wrap the request stream with a text-based writer
-            StreamWriter writer = new StreamWriter(req.GetRequestStream());
-            // Write the XML text into the stream
-
-            xmlRequest.Save(writer);
-
-            writer.Close();
-            // Send the data to the webserver
-            WebResponse rsp = req.GetResponse();
-
-            Stream dataStream = rsp.GetResponseStream();
-            // Open the stream using a StreamReader 
-            StreamReader reader = new StreamReader(dataStream);
-            // Read the content.
-            string responseFromServer = reader.ReadToEnd();
-
-            // int index = responseFromServer.IndexOf("<?");
-            //string substr = responseFromServer.Substring(index);
-            // Display the content.
-            //MessageBox.Show(responseFromServer);
-            // Clean up the streams.
-
-            reader.Close();
-            dataStream.Close();
-            rsp.Close();
-
-            return responseFromServer;
+            using var response = HttpClient.Send(request);
+            response.EnsureSuccessStatusCode();
+            return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
         }
     }

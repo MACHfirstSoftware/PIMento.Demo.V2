@@ -79,8 +79,13 @@ namespace PHXCOM.VehiclesDemo.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    name: "root",
+                    pattern: "",
+                    defaults: new { controller = "Home", action = "Index" });
+
+                endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller}/{action}/{id?}");
 
                 // Keep legacy slug-based URLs routed through the existing handler.
                 endpoints.MapControllerRoute(

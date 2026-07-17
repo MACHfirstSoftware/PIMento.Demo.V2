@@ -6,7 +6,6 @@ namespace PHXCOM.VehiclesDemo.Web.Utils
 {
     public class SMSUtil
     {
-        [Obsolete]
         internal static bool SendSms(string TwilioPhoneNumber, string ToNumber, string Message)
         {
             try
