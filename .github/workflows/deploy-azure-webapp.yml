@@ -101,7 +101,7 @@ jobs:
             throw "Route did not become healthy: $Uri"
           }
 
-          $paths = @('/', '/Parts', '/Order/Cart')
+          $paths = @('/', '/Index', '/Parts', '/Account/Login', '/Home/Cache')
           foreach ($path in $paths) {
             $uri = "$base$path"
             try {
