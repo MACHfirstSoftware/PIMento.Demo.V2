@@ -38,18 +38,28 @@ namespace PIMento.Demo.Web.Controllers
         {
             EbizClient.Session.SetSlugSession(new Dictionary<string, string>());
 
+            List<Feature> features = new List<Feature>();
+            List<FilterProp> makes = new List<FilterProp>();
+
             try
             {
                 var featureResponse = await EbizClient.Feature.GetFeaturesAsync();
-                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
-                List<FilterProp> makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
-                List<Feature> features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
-                return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
+                features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
             }
             catch
             {
-                return View(new Tuple<List<Feature>, List<FilterProp>>(new List<Feature>(), new List<FilterProp>()));
             }
+
+            try
+            {
+                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
+                makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
+            }
+            catch
+            {
+            }
+
+            return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
         }
 
         public async Task<IActionResult> Handler()
