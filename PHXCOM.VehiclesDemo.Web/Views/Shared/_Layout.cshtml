@@ -1,6 +1,8 @@
 ﻿@{
     bool noLayoutView = false;
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
 }
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +13,7 @@
     <meta name="description" content="@ViewData["Description"]" />
     <meta name="keywords" content="@ViewData["Keywords"]" />
     <meta name="robots" content="@ViewData["Robots"]" />
+    <meta name="csrf-token" content="@csrfToken" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/fontawesome-5.12.0-web/css/all.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" />

@@ -10,10 +10,7 @@ namespace PHXCOM.VehiclesDemo.Web.Service
 
     public class Payment
     {
-
-        //public static string ApiKey { get; } = "2F822Rw39fx762MaV7Yy86jXGTC7sCDy";
-
-        public static string ApiKey { get; } = "BENmxKm6583M869d4Ub9ESxESp82ke58";
+        private static string ApiKey => Utils.AppConfig.GetRequired("Payments:ApiKey", "PAYMENTS_API_KEY");
         //internal static IHttpContextAccessor _httpContextAccessor;
         //public Payment(IHttpContextAccessor _httpContextAccessor)
         //{

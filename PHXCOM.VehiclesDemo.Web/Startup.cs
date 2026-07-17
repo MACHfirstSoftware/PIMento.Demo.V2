@@ -2,10 +2,12 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PHXCOM.PlatformSDK.Services;
+using PHXCOM.VehiclesDemo.Web.Utils;
 
 namespace PHXCOM.VehiclesDemo.Web
 {
@@ -21,17 +23,29 @@ namespace PHXCOM.VehiclesDemo.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AppConfig.Initialize(Configuration);
+
             services.AddApplicationInsightsTelemetry();
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+            });
+
+            services.AddControllersWithViews(options =>
+                {
+                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                })
+                .AddRazorRuntimeCompilation();
 
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(90);
             });
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
 
-            //EbizClient.Connect("3b7db6c5621d483bb0124e48339fcb85", "25a3e285c33c430598b269e11b3eda90");
-            EbizClient.Connect("72BC6E4F069F4BA3BD0EA34D7B0C9E0B", "6c13591c7aa740fca940d54038e560eb");
+            var ebizClientId = AppConfig.GetRequired("Ebiz:ClientId", "EBIZ_CLIENT_ID");
+            var ebizClientSecret = AppConfig.GetRequired("Ebiz:ClientSecret", "EBIZ_CLIENT_SECRET");
+            EbizClient.Connect(ebizClientId, ebizClientSecret);
 
         }
 
@@ -58,14 +72,21 @@ namespace PHXCOM.VehiclesDemo.Web
               
 
             app.UseRouting();
+            app.UseAuthentication();
             app.UseSession();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute("defaultsf", "{*url}", new { controller = "Pages", action = "Contact" });
-                endpoints.MapControllerRoute("defaultsf", "{*url}", new { controller = "Product", action = "ProductSearchResults" });
-                endpoints.MapControllerRoute("default", "{*url}", new { controller = "Home", action = "Handler" });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                // Keep legacy slug-based URLs routed through the existing handler.
+                endpoints.MapControllerRoute(
+                    name: "legacy-catchall",
+                    pattern: "{*url}",
+                    defaults: new { controller = "Home", action = "Handler" });
 
             });
         }
