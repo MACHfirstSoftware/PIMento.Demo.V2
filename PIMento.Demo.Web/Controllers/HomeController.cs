@@ -72,6 +72,31 @@ namespace PIMento.Demo.Web.Controllers
             {
                 try
                 {
+                    var filterResponse = await EbizClient.Product.GetFilterProductAsync(true, -1, string.Empty);
+                    if (!string.IsNullOrWhiteSpace(filterResponse.Content))
+                    {
+                        var rows = JObject.Parse(filterResponse.Content)["value"] as JArray;
+                        if (rows != null)
+                        {
+                            makes = rows
+                                .Select(r => r["make"]?.ToString())
+                                .Where(m => !string.IsNullOrWhiteSpace(m))
+                                .Distinct(StringComparer.OrdinalIgnoreCase)
+                                .OrderBy(m => m)
+                                .Select(m => new FilterProp { make = m })
+                                .ToList();
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            if (makes.Count == 0)
+            {
+                try
+                {
                     var apps = EbizClient.Application.GetApplications().ContentObject as List<Application>;
                     if (apps != null && apps.Count > 0)
                     {
