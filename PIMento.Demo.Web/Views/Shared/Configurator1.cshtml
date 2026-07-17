@@ -1,0 +1,100 @@
+@model PHXCOM.PlatformSDK.Models.Product
+
+@{
+    ViewData["Title"] = "Product Line";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<string> breadCrumbs = ViewBag.breadCrumbs;
+}
+<input type="hidden" id="hdnProductId" value="@Model.ProductId" />
+<input type="hidden" id="hdnProductName" value="@Model.ProductName" />
+<input type="hidden" id="hdnisProductUniversal" value="@Model.IsUniversal" />
+
+<div class="container">
+    <div class="row wrapper-product pb-4">
+        <div id="syndicationBreadcrumbContainer" class="breadcrumbs">
+
+            @await Html.PartialAsync("BreadCrumbView", breadCrumbs)
+
+        </div>
+    </div>
+        @if (Model.ProductTypeId == 4)
+        {
+            <div class="col-lg-12 col-md-12 col-sm-12 ">
+                <h4 class="wrapper-product-header mt-3">@Model.ProductName</h4>
+            </div>
+
+            <div class="wrapper-product-description col-lg-6 col-md-6 col-sm-12  d-inline-block float-left">
+                <p class="mb-0">@Model.ShortDescription</p>
+                <div class="tab-pane active easyzoom easyzoom--adjacent" id="pic-0">
+                    <a href="@Model.ImageFull">
+                        <img class="d-inline-block w-100" src="@Model.ImageFull" />
+                    </a>
+                </div>
+            </div>
+        }
+
+        <div class="col-lg-6 col-md-6 col-sm-12  form-section item-contentconfig-area float-left d-inline-block">
+            <h4 class="wrapper-product-header pl-md-3 mt-4 mt-md-0">Choose your custom fit</h4>
+            <div id="categoryProductFilter" class=" form-group mobile-controlled wrapper-product-filters">
+                <div class=" mobile-controlled">
+                    <div class="col-12 mobile-controlled pl-0 pr-0 mt-3">
+                        <div class="col-lg-12 col-md-12 col-sm-12 form-group px-0 pl-lg-3" id="divYear">
+                            <label>Select Year </label>
+                            <select class="form-control" id="ddlYear" onchange="GetMakeByYear()">
+                                <option value="-1">-- Year --</option>
+                            </select>
+                        </div>
+                        <div id="divMake" class="col-lg-12 col-md-12 col-sm-12 px-0 pl-lg-3 form-group">
+                            <label>Select Make </label>
+                            <select class="form-control" id="ddlMake" onchange="GetModelByMakeAndYear()" disabled><option>-- Make --</option></select>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div id="divModel" class="col-lg-12 col-md-12 col-sm-12 px-0 pl-lg-3 form-group">
+                            <label>Select Model </label>
+                            <select class="form-control" id="ddlModel" onchange="GetSubModelByModel()" disabled><option>-- Model --</option></select>
+                        </div>
+                        <div id="divCaptureFitmentGaps" class="col-lg-12 wrapper-need-help"></div>
+                        <div id="divConfigSelector"></div>
+                        <div id="divFeatures" style="display:none"></div>
+                        <div id="colourSelectContainer" class="col-12"></div>
+                        <div id='modifiersContainer' style="display:none">
+                            @*@if (Model.Modifiers != null)
+                                {
+                                    for (int i = 1; i <= Model.Item1.Modifiers.Count; i++)
+                                    {
+                                        <div id="modifier_selector_@i" class="col-lg-12 text-align-right mt-3 pl-0 pr-0"></div>
+                                    }
+                                    <div id="personalize-mod-container" class="col-lg-12 text-align-right mt-3"></div>
+                                }*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="col-12 mt-4 text-right wrapper-btn">
+                <button type="button" class="btn btn-primary common-button d-none" onclick="orderEntry.addToBucket()">Add to Cart</button>
+            </div>*@
+    </div>
+
+    @*Draw Configurator results*@
+    <div class="col-lg-12 col-md-12 col-sm-12 mt-lg-4 pb-3 d-inline-block px-0" id="divItemDeatisl"></div>
+
+</div>
+@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/content.js"></script>
+<script type="text/javascript">
+    var selectedAttributeArray = [];
+    var jsonresponse = {};
+
+    $(document).ready(function () {
+        let productId = @Model.ProductId;
+        let isUniversal = false;
+        //let year = -1;
+        //let make = "";
+        LoadYearPopup(productId, isUniversal);
+    });
+
+</script>

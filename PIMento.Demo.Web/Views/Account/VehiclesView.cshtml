@@ -1,0 +1,54 @@
+@model List<PHXCOM.PlatformSDK.Models.Application>
+@{
+    Layout = null;
+}
+<div class="col-lg-12 form-group pl-0 pr-0 wrapper-grid-title title-font d-none"></div>
+<div class="grid-wrapper-full">
+    <h6 class="text-uppercase font-weight-bold mb-0 pb-0 pt-3">Vehicle Result</h6>
+    <hr />
+    <div class="wrapperCmnGrid setAlign">
+        <div id="divdiagramItems">
+
+            @if (Model != null && Model.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordred table-striped part-list-product" role="grid" id="tbProductItem">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col_1 col">Application Name</th>
+                                <th scope="col" class="col_1 col">Make</th>
+                                <th scope="col" class="col_1 col">Model</th>
+                                <th scope="col" class="col_1 col">Year</th>
+                                <th scope="col" class="col_1 col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    @*<td><input type="checkbox" id="chk_@product.ApplicationId" /></td>*@
+                                    <td>@product.ApplicationName</td>
+                                    <td>@product.Make</td>
+                                    <td>@product.Model</td>
+                                    <td>@product.Year</td>
+                                    <td>
+                                        <div class="col-12 mt-4 pr-0 text-right">
+                                            <button type="button" class="common-orange-button px-4" onclick="account.saveMyVehicles(@product.ApplicationId)">Save</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <h4 class="d-inline-block w-100 content-empty-message no-product-msg"> Sorry. We currently do not have any vehicles for the above settings.</h4>
+            }
+
+        </div>
+    </div>
+</div>
+@*@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")*@

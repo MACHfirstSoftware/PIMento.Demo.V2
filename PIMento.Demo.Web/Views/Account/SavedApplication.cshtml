@@ -1,0 +1,68 @@
+@model List<PHXCOM.PlatformSDK.Models.ApplicationSerials>
+@{
+    Layout = null;
+    var countries = ViewBag.Countries as List<PHXCOM.PlatformSDK.Models.Country>;
+}
+    
+    <div id="applicationSerialContainer" class="col-lg-12 px-0">
+
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="table-responsive wrapper-fitment-map">
+                <table class="table table-bordred table-striped">
+                    <thead>
+                        <tr>
+                            @*<th scope="col" class="col_0">Image</th>*@
+                            <th scope="col" class="col_1">Application Name</th>
+                            <th scope="col" class="col_2">Make</th>
+                            <th scope="col" class="col_3">Model</th>
+                            <th scope="col" class="col_2 cus-col-2">Year</th>
+                            <th scope="col" class="col_4">Serial Number</th>
+                            <th scope="col" class="col_4">Country</th>
+                            <th scope="col" class="col_4">State</th>
+                            <th scope="col" class="col_4">Zip</th>
+                            <th scope="col" class="col_2 cus-2"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            var country = "";
+                            country = countries.Where(x => x.CountryId == item.appSerialMappingCountry.GetValueOrDefault()).Select(x => x.CountryName).FirstOrDefault();
+
+                        <tr>
+                            @*<td class="col text-center"><img src="" width="48" height="34" /></td>*@
+                            <td data-label="appName : &nbsp;">@item.applicationName</td>
+                            <td data-label="make : &nbsp;">@item.make</td>
+                            <td data-label="model : &nbsp;">@item.model</td>
+                            <td data-label="year : &nbsp;">@item.year</td>
+                            <td data-label="serial : &nbsp;"><div id="txtSerial_@item.appSerialMappingId"> <div>@item.serialNumber</div></div></td>
+                            <td data-label="country : &nbsp;">
+                                <div id="ddlCountry1_@item.appSerialMappingId">
+                                    <div>@country</div>
+                                </div>
+                            </td>
+                            <td data-label="state : &nbsp;">
+                                <div id="ddlState1_@item.appSerialMappingId">
+                                    @item.appSerialMappingState
+                                </div>
+                            </td>
+                            <td data-label="zip : &nbsp;"><div id="txtZip_@item.appSerialMappingId">@*<input type="text" class="d-none w-100" id="txtZip_@item.appSerialMappingId" />*@ @item.appSerialMappingZip</div></td>
+                            <td class="col text-right grid-button-wrapper">
+                                <span onclick="account.shopVehicle(@item.year, '@item.make', '@item.model')" title="Shop By"><i class="fa fa-shopping-cart m-1"></i></span>
+                                <span onclick="account.editVehicle(@item.appSerialMappingId, @item.applicationId, @item.contactId, '@country', '@item.appSerialMappingState', '@item.serialNumber', '@item.appSerialMappingZip')" id="spEdit_@item.appSerialMappingId"><i class="fa fa-edit m-1"></i></span>
+                                <span onclick="account.deleteVehicle(@item.appSerialMappingId)" title="Delete"><i class="fa fa-times m-1"></i></span>
+                            </td>
+                        </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <h4 class="d-inline-block w-100 content-empty-message no-product-msg"> Sorry. You have not saved any vehicles yet.</h4>
+        }
+    </div>

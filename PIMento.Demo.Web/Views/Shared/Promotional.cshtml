@@ -1,0 +1,360 @@
+@model PHXCOM.PlatformSDK.Models.Product
+
+@{
+    string metaTitle = "";
+    string metaDescriptionContent = "";
+    string metakeyWords = "";
+    string metaRobots = "";
+    if (Model.ProductMetaData != null && Model.ProductMetaData.Count > 0 && !string.IsNullOrEmpty(Model.ProductMetaData[0].MetaTitle))
+    {
+        ViewData["Title"] = Model.ProductMetaData[0].MetaTitle;
+        metaTitle = Model.ProductMetaData[0].MetaTitle;
+        metaDescriptionContent = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaDescriptionContent) ? "" : Model.ProductMetaData[0].MetaDescriptionContent;
+        metakeyWords = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaKeywords) ? "" : Model.ProductMetaData[0].MetaKeywords;
+        metaRobots = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaRobots) ? "" : Model.ProductMetaData[0].MetaRobots;
+    }
+    else
+    {
+        ViewData["Title"] = Model.ProductName;
+    }
+
+
+    ViewData["Description"] = metaDescriptionContent;
+    ViewData["Keywords"] = metakeyWords;
+    ViewData["Robots"] = (metaRobots == null ? "" : metaRobots);
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Dictionary<string, string> breadCrumbs = ViewBag.breadCrumbs;
+
+    int modifiersCount = 0;
+    if (Model.Modifiers != null && Model.Modifiers.Count > 0) modifiersCount = Model.Modifiers.Count;
+
+    var availableSizes = Model.Items != null ? Model.Items.Where(x => x.ProductId == Model.ProductId && x.Size != null).OrderBy(x => x.Size).Select(x => x.Size).Distinct().ToList() : null;
+    if (Model.AdditionalImages != null) Model.AdditionalImages = Model.AdditionalImages.OrderBy(x => x.SortOrder).ToList();
+    string[] sizeOrder = new[] { "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL", "6XL" };
+}
+
+<input type="hidden" id="hdnProductId" value="@Model.ProductId" />
+<input type="hidden" id="hdnProductName" value="@Model.ProductName" />
+<input type="hidden" id="hdnProductTypeId" value="@Model.ProductTypeId" />
+<input type="hidden" id="hdnisProductUniversal" value="@Model.IsUniversal" />
+<input type="hidden" id="hdnModifiersCount" value="@modifiersCount" />
+
+<div id='syndicateHolder' class="individual-product-wrapper">
+    <div class="wrapper-page-full justify-content-md-center">
+      
+        <div class="col-lg-12 col-md-12 col-sm-12 position-relative wrapper-search-description">
+            <div class="row wrapper-product pb-4">
+                <div class="breadcrumbs">
+                    <div class="container">
+                        @await Html.PartialAsync("BreadCrumbView", breadCrumbs)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="container header-separator-bc mobile-controlled mt-4 px-0">
+                <div class="justify-content-md-center">
+                    <div class="col-lg-12 col-md-12 col-sm-12 pr-0 pl-0 ">
+                        <div class="col-lg-12 col-md-12 col-sm-12 mobile-controlled-padding box-actions ">
+                            <div class="col-lg-6 col-md-12 col-sm-12 float-left images-section pr-lg-3 pl-0 mb-lg-5" id="productImagePreviewContainer">
+                                <div>
+                                    <div class="preview col-lg-12 col-md-12 col-sm-12 pr-0 pl-0 pr-md-0 pl-md-0 pl-xl-3 pr-xl-3 pl-lg-3 pr-lg-3">
+                                        <div class="preview-pic tab-content mb-3">
+                                            <div class="tab-pane active easyzoom easyzoom--adjacent" id="pic-0">
+                                                @*<a href="@Model.ImageFull"><img class="" src="@Model.ImageFull" /></a>*@
+                                                <img class="zoom-img zoom-img-customize" id="zoom_03" src="@Model.ImageFull" data-zoom-image="@Model.ImageFull" />
+                                            </div>
+                                            @{
+                                                var count = 1;
+                                                if (Model.AdditionalImages != null)
+                                                {
+                                                    foreach (var item in Model.AdditionalImages)
+                                                    {
+
+                                                        if (item.videoUrl != null && @item.videoUrl != "")
+                                                        {
+                                                            <div class="tab-pane" id="pic_@count">
+                                                                <div class="youtube" data-embed="@item.videoUrl">
+                                                                    <div class="play-button"></div>
+                                                                </div>
+                                                                <label>@item.Caption</label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            @*<div class="tab-pane easyzoom easyzoom--adjacent main-picture" id="pic_@count">
+                                                            <a href="@item.Image"><img src="@item.Image" /></a>
+                                                            <div class="clearfix"></div>
+                                                            <label>@item.Caption</label>
+                                                        </div>*@
+
+                                                        }
+                                                        count++;
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                        @*<div class="wrapper-image-description">
+                                        <h3>Example image(s) do not necessarily reflect exact applications.</h3>
+                                    </div>*@
+                                        <ul id="gallery_01" class="preview-thumbnail nav nav-tabs">
+                                            @{
+                                                @*<li class="active"><a data-target="#pic-0" data-toggle="tab"><img src="@Model.ImageFull" /></a></li>*@
+                                                <li class="thumb active"><a href="#" class="elevatezoom-gallery" data-update="" data-image="@Model.ImageFull" data-zoom-image="@Model.ImageFull"><img src="@Model.ImageFull" /></a></li>
+                                                var counts = 1;
+                                                var videoSrc = "";
+                                                var videoClass = "";
+                                                var productImage = "";
+
+                                                if (Model.AdditionalImages != null)
+                                                {
+                                                    foreach (var item in Model.AdditionalImages)
+                                                    {
+                                                        if (item.videoUrl != null && item.videoUrl != "")
+                                                        {
+                                                            videoSrc = "true";
+                                                            videoClass = "display:inline-block;";
+                                                            productImage = "https://img.youtube.com/vi/" + item.videoUrl + "/0.jpg";
+                                                        }
+                                                        else
+                                                        {
+                                                            videoClass = "display:none;";
+                                                            productImage = item.Image;
+                                                        }
+                                                        @*<li><a data-target="#pic_@counts" video-src="@videoSrc" data-toggle="tab"><span style="@videoClass" class="video-tumb-wrapper"><i class="fa fa-play" aria-hidden="true"></i></span><img src="@item.Image" /></a></li>*@
+                                                        <li class="thumb"><a data-target="#pic_@counts" video-src="@videoSrc" data-toggle="tab" data-update="" data-image="@productImage" data-zoom-image="@productImage" href="#" class="elevatezoom-gallery"><span style="@videoClass" class="video-tumb-wrapper"><i class="fa fa-play" aria-hidden="true"></i></span><img src="@item.Image" /></a></li>
+                                                        counts++;
+                                                    }
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12 col-sm-12 pl-md-3 pr-md-3 pl-lg-0 pr-lg-0 pl-xl-0 pr-xl-0 pb-2 mb-2 mb-lg-0 float-right item-contentconfig-area" id="productDetailContainer">
+                                <div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 pt-0 px-0 red-bottom-border">
+                                        <h2 class="wrapper-product-header" style="margin-top:0;">@Model.ProductName</h2>
+                                        <h6 class="product-price d-inline-block w-100">@(Model.PricingLabel != null ? Model.PricingLabel : "")</h6>
+                                        @*<h6 class="btn btn-danger text-uppercase rounded-0 new-release-tag">New Release</h6>*@
+                                    </div>
+                                    <div class="wrapper-product-description col-lg-12 col-md-12 col-sm-12 px-0 py-2 red-bottom-border">
+                                        <p class="mb-3">@Model.ShortDescription</p>
+                                        @*<p class="product-details"><span class="text-uppercase">PRODUCT DETAILS:</span> Regular Fit, Unisex, 100% cotton</p>*@
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-12 col-sm-12 pt-3 pt-lg-0 float-left pr-md-0 pr-lg-0 pr-xs-0 pl-md-3 pl-lg-0 pl-xs-0 form-section item-contentconfig-area">
+
+                                <div id="categoryProductFilter" class="col-lg-12 col-md-12 col-sm-12 form-group wrapper-product-filters">
+                                    @*mobile-controlled*@
+                                    <div class="col-lg-12 px-0">
+                                        @*mobile-controlled*@
+                                        <div class="col-12 mobile-controlled px-0">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 form-group px-0 wrapper-size mb-3 pb-3  red-bottom-border" id="divSize">
+                                                <h5 class="d-inline-block w-100 wrapper-midifier-header mb-3">Size </h5>
+                                                @*<span id="indicator_ddlSize" class='wrapper-status-done d-none'> <i class='fa fa-check-circle text-success'></i></span>
+                                            <select class="form-control" id="ddlSize" onchange="promotional.getColorBySize()">
+                                                <option value="-1">-- Size --</option>
+                                                @if (availableSizes != null && availableSizes.Count > 0)
+                                                {
+                                                    foreach (var item in availableSizes)
+                                                    {
+                                                        if (item != null)
+                                                        {
+                                                            <option value="@item">@item</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>*@
+                                                @if (availableSizes != null && availableSizes.Count > 0)
+                                                {
+                                                    var sizesInOrder = availableSizes
+                                                                        .OrderBy(s => sizeOrder.Contains(s) ? "0" : "1")  // put unmatched sizes at the end
+                                                                        .ThenBy(s => Array.IndexOf(sizeOrder, s))  // sort matches by size
+                                                                        .ThenBy(s => s); // sort rest A-Z
+                                                    var sizeCount = 1;
+                                                    foreach (var item in sizesInOrder)
+                                                    {
+                                                        if (item != null)
+                                                        {
+                                                            <input type="radio" id="size_@sizeCount" name="sizeRadioGroup" value="@item" onclick="promotional.getColorBySize(@sizeCount)" />
+                                                            <label class="size-btn" for="size_@sizeCount"> @item </label>
+                                                        }
+                                                        sizeCount++;
+                                                    }
+                                                }
+
+                                            </div>
+
+                                            <div id="divColor" class="col-lg-12 col-md-12 col-sm-12 px-0 form-group d-none wrapper-color mb-3 pb-3 red-bottom-border">
+                                                <h5 class="d-inline-block w-100 wrapper-midifier-header mb-3">Color </h5>
+                                                @*<span id="indicator_ddlColor" class='wrapper-status-done d-none'> <i class='fa fa-check-circle text-success'></i></span>
+                                            <select class="form-control" id="ddlColor" onchange="promotional.getItemsBySizeAndColor()" disabled><option>-- Color --</option></select>*@
+                                                <div id="ddlColor"></div>
+                                            </div>
+
+                                            <div class="clearfix"></div>
+                                            <div id="divStyle" class="col-lg-12 col-md-12 col-sm-12 px-0 form-group d-none wrapper-style mb-3 pb-3 red-bottom-border">
+                                                <h5 class="d-inline-block w-100 wrapper-midifier-header mb-3">Style </h5>
+                                                @*<span id="indicator_ddlStyle" class='wrapper-status-done d-none'> <i class='fa fa-check-circle text-success'></i></span>
+                                            <select class="form-control" id="ddlStyle" onchange="promotional.getItemsBySizeColorAndStyle()" disabled><option>-- Style --</option></select>*@
+                                                <div id="ddlStyle"></div>
+                                            </div>
+                                            <div id="divCaptureFitmentGaps" class="col-lg-12 wrapper-need-help"></div>
+                                            <div id="divConfigSelector"></div>
+                                            <div id="divFeatures" style="display:none"></div>
+                                            <div id="colourSelectContainer" class="col-12"></div>
+                                            <div id='modifiersContainer' style="display:none">
+                                                @if (Model.Modifiers != null)
+                                                {
+                                                    for (int i = 1; i <= Model.Modifiers.Count; i++)
+                                                    {
+                                                        <div id="modifier_selector_@i" class="col-lg-12 text-align-right mt-3 pl-0 pr-0"></div>
+                                                    }
+                                                    <div id="personalize-mod-container" class="col-lg-12 text-align-right mt-3"></div>
+                                                }
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    @*<div class="col-lg-12 col-md-12 col-sm-12 mt-lg-0 pb-2 d-inline-block px-0" id="divItemDeatisl"></div>*@
+                                    <div class="col-lg-12 col-md-12 col-sm-12 mt-lg-0 pb-2 px-0 d-none mb-3 float-left" id="divProShopItemDetails"></div>
+                                    <!--<div class="col-lg-12 col-md-12 col-sm-12 mt-lg-0 pb-2 px-0 d-none mb-3 float-left" id="addToCart">
+                            <h5 class="d-inline-block w-100 section-sub-title mb-3">QUANTITY </h5>
+                            <div class="col-5 float-left pl-0">
+                                <div class="input-group quantity-selector"><div class="input-group-prepend">-->
+                                    @*<button style="min-width: 2.5rem" class="btn btn-decrement rounded-0 btn-outline-secondary btn-minus" type="button"><strong>-</strong></button>*@<!--</div><input type="text" inputmode="decimal" style="text-align: center" class="form-control buttons-only qty-collector w-58 px-2 text-center float-left" placeholder="" readonly=""><div class="input-group-append">-->@*<button style="min-width: 2.5rem" class="btn btn-increment rounded-0 btn-outline-secondary btn-plus" type="button"><strong>+</strong></button>*@
+                                    <!--</div></div>
+                                </div>
+                                <div class="col-7 float-left pr-0">
+                                    <button type="button" class="btn btn-green px-4 py-1 w-100" onclick="orderEntry.addToBucket()">Add to Cart</button>
+                                </div>
+                            </div>-->
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Draw Configurator results*@
+                        @*<div class="col-lg-12 col-md-12 col-sm-12 mt-lg-4 py-3 d-inline-block px-0 px-lg-3" id="divItemDeatisl"></div>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.RelatedProducts != null && Model.RelatedProducts.Count > 0)
+{
+    <div class="frequent-items py-4">
+        <div class="container" id="relatedProductContainer">
+            <h2 class="text-uppercase my-2">FREQUENTLY BOUGHT TOGETHER</h2>
+            <div class="d-inline-block w-100 my-5">
+
+                <div class="col-12 col-md-12 float-left frequent-item d-inline-block px-0">
+                    @foreach (var relPro in Model.RelatedProducts)
+                    {
+                        <div class="d-inline-block float-left col-md-4 col-12">
+                            <div class="image-cover text-center mb-3">
+                                <img src="@relPro.RelatedProductImage" />
+                            </div>
+
+                            <div class="w-100">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" onclick="promotional.loadSkusBasedOnFeatureProductSelection(this)" class="custom-control-input" name="rel-product-checkbox" product-id="@relPro.RelatedProductId" id="customCheck_@relPro.RelatedProductId">
+                                    <label class="custom-control-label text-uppercase" for="customCheck_@relPro.RelatedProductId">@relPro.RelatedProductName</label>
+                                </div>
+                            </div>
+
+                            @if (relPro.RelatedProductItems != null && relPro.RelatedProductItems.Count > 0)
+                            {
+                                <div class="select-options mt-2" id="divRelProdItem_@relPro.RelatedProductId">
+                                    <select class="form-control mb-2 " disabled id="ddlRelProdItem_@relPro.RelatedProductId" onchange="promotional.setRelatedProductItemPrice(@relPro.RelatedProductId)" related-product-name="@relPro.RelatedProductName">
+                                        <option value="-1" selected> -- Select Item --</option>
+                                        @foreach (var relItem in relPro.RelatedProductItems)
+                                        {
+                                            if (relItem.Pricing != null && relItem.Pricing.Count > 0)
+                                            {
+                                                <option value="@relItem.ItemId" skuId="@relItem.ItemId" sku-price="@(relItem.Pricing[0].Price)" skuSize="@(string.IsNullOrEmpty(relItem.Size) ? "" : relItem.Size)" skuColor="@(string.IsNullOrEmpty(relItem.Color) ? "" : relItem.Color)" skuStyle="@(string.IsNullOrEmpty(relItem.Style) ? "" : relItem.Style)" skuImage="@(string.IsNullOrEmpty(relItem.ItemImage) ? "" : relItem.ItemImage)" maxQty="@(relItem.MaxQuantity == 0 ? 100 : relItem.MaxQuantity)">@relItem.ItemDetails</option>
+                                            }
+
+                                        }
+                                    </select>
+
+                                    <div class="item-price" id="relProItemPrice_@relPro.RelatedProductId"></div>
+                                </div>
+                            }
+                        </div>
+
+                    }
+                    <i class="fas fa-plus plus-icon"></i>
+                </div>
+
+            </div>
+            <div class="d-inline-block w-100 mb-5">
+                <div class="total-prices text-center float-md-right">
+                    @*<div class="prices">total price: <span class="old-price">$124.99</span> <span class="new-price">$109.99</span></div>*@
+                    <button type="button" class="btn btn-green px-5 py-0 w-100 mt-2" onclick="orderEntry.addToRelatedProductItemsToBucket()"><span class="px-5">ADD selected TO CART</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@*@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")*@
+
+@section Scripts
+{
+    <script src="~/js/promotional.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            @*let productId = @Model.ProductId;
+            let isUniversal = false;*@
+
+            //LoadYearPopup(productId, isUniversal);
+
+            var imgWidth = $('.zoom-img').width();
+            var imgHeight = $('.zoom-img').height();
+
+            if ($(window).width() < 992) {
+                var zoomtype = 'lens';
+            } else {
+                var zoomtype = 'window';
+            }
+
+            $("#zoom_03").ezPlus({
+                gallery: 'gallery_01',
+                cursor: 'pointer',
+                galleryActiveClass: "active",
+                imageCrossfade: true,
+                scrollZoom: true,
+                borderColour: '#eee',
+                zoomWindowOffsetX: 23,
+                zoomWindowOffsetY: -2,
+                zoomWindowHeight: 300,
+                zoomWindowWidth: 300,
+                responsive: true,
+                zoomType: zoomtype,
+                lensSize: 200,
+                respond: [
+                    {
+                        range: '0-767',
+                        scrollZoom: false
+                    }
+                ]
+            });
+
+    });
+
+    </script>
+
+
+}
+

@@ -1,0 +1,516 @@
+@model PHXCOM.PlatformSDK.Models.Product
+
+@{
+    string metaTitle = "";
+    string metaDescription = "";
+    string metakeyWords = "";
+    if (Model.ProductMetaData != null && Model.ProductMetaData.Count > 0 && !string.IsNullOrEmpty(Model.ProductMetaData[0].MetaTitle))
+    {
+        ViewData["Title"] = Model.ProductMetaData[0].MetaTitle;
+        metaTitle = Model.ProductMetaData[0].MetaTitle;
+        metaDescription = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaDescription) ? "" : Model.ProductMetaData[0].MetaDescription;
+        metakeyWords = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaKeywords) ? "" : Model.ProductMetaData[0].MetaKeywords;
+    }
+    else
+    {
+        ViewData["Title"] = Model.ProductName;
+    }
+
+
+    ViewData["Description"] = metaDescription;
+    ViewData["Keywords"] = metakeyWords;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Dictionary<string, string> breadCrumbs = ViewBag.breadCrumbs;
+
+    int modifiersCount = 0;
+    if (Model.Modifiers != null && Model.Modifiers.Count > 0) modifiersCount = Model.Modifiers.Count;
+}
+
+<input type="hidden" id="hdnProductId" value="@Model.ProductId" />
+<input type="hidden" id="hdnProductName" value="@Model.ProductName" />
+<input type="hidden" id="hdnisProductUniversal" value="@Model.IsUniversal" />
+<input type="hidden" id="hdnModifiersCount" value="@modifiersCount" />
+
+<div id='syndicateHolder'>
+
+    <div class="wrapper-page-full justify-content-md-center">
+        <div class="col-lg-12 col-md-12 col-sm-12 position-relative wrapper-search-description">
+            <div class="">
+                <div class="row wrapper-product pb-4">
+                    <div id="syndicationBreadcrumbContainer" class="breadcrumbs">
+                        <div class="container">@await Html.PartialAsync("BreadCrumbView", breadCrumbs)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container header-separator-bc mobile-controlled mt-2 px-0">
+                <div class="justify-content-md-center">
+                    <div class="col-lg-12 col-md-12 col-sm-12 pr-0 pl-0 ">
+                        <div class="col-lg-12 col-md-12 col-sm-12 mobile-controlled-padding box-actions ">
+                            <div class="col-lg-6 col-md-12 col-sm-12 pr-0 pl-0 pb-2  float-right item-contentconfig-area" id="productDetailContainer">
+                                <div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 pt-2 pl-md-3 pr-md-3 pl-lg-3 pr-lg-3 pl-xl-3 pr-xl-3">
+                                        <h2 class="wrapper-product-header" style="margin-top:0;">@Model.ProductName</h2>
+                                    </div>
+                                    <div class="wrapper-product-description col-lg-12 col-md-12 col-sm-12 pl-md-3 pr-md-3 pl-lg-3 pr-lg-3 pl-xl-3 pr-xl-3">
+                                        <p class="mb-0">@Model.ShortDescription</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12 col-sm-12 float-left images-section pr-0 pl-0 " id="productImagePreviewContainer">
+                                <div>
+                                    <div class="preview col-lg-12 col-md-12 col-sm-12 pr-0 pl-0 pr-md-3 pl-md-3 pl-xl-3 pr-xl-3 pl-lg-3 pr-lg-3">
+                                        <div class="preview-pic tab-content ">
+                                            <div class="tab-pane active easyzoom easyzoom--adjacent" id="pic-0">
+                                                @*<a href="@Model.ImageFull"><img class="" src="@Model.ImageFull" /></a>*@
+                                                <img class="zoom-img zoom-img-customize" id="zoom_03" src="@Model.ImageFull" data-zoom-image="@Model.ImageFull" />
+                                            </div>
+                                            @{
+                                                var count = 1;
+                                                if (Model.AdditionalImages != null)
+                                                {
+                                                    foreach (var item in Model.AdditionalImages)
+                                                    {
+
+                                                        if (item.videoUrl != null && @item.videoUrl != "")
+                                                        {
+                                                            <div class="tab-pane" id="pic_@count">
+                                                                <div class="youtube" data-embed="@item.videoUrl">
+                                                                    <div class="play-button"></div>
+                                                                </div>
+                                                                <label>@item.Caption</label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            @*<div class="tab-pane easyzoom easyzoom--adjacent main-picture" id="pic_@count">
+                                                                    <a href="@item.Image"><img src="@item.Image" /></a>
+                                                                    <div class="clearfix"></div>
+                                                                    <label>@item.Caption</label>
+                                                                </div>*@
+
+                                                        }
+                                                        count++;
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                        <div class="wrapper-image-description">
+                                            <h3>Example image(s) do not necessarily reflect exact applications.</h3>
+                                        </div>
+                                        <ul id="gallery_01" class="preview-thumbnail nav nav-tabs">
+                                            @{
+                                                @*<li class="active"><a data-target="#pic-0" data-toggle="tab"><img src="@Model.ImageFull" /></a></li>*@
+                                                <li class="thumb active"><a href="#" class="elevatezoom-gallery" data-update="" data-image="@Model.ImageFull" data-zoom-image="@Model.ImageFull"><img src="@Model.ImageFull" /></a></li>
+                                                var counts = 1;
+                                                var videoSrc = "";
+                                                var videoClass = "";
+                                                var productImage = "";
+
+                                                if (Model.AdditionalImages != null)
+                                                {
+                                                    foreach (var item in Model.AdditionalImages)
+                                                    {
+                                                        if (item.videoUrl != null && item.videoUrl != "")
+                                                        {
+                                                            videoSrc = "true";
+                                                            videoClass = "display:inline-block;";
+                                                            productImage = "https://img.youtube.com/vi/" + item.videoUrl + "/0.jpg";
+                                                        }
+                                                        else
+                                                        {
+                                                            videoClass = "display:none;";
+                                                            productImage = item.Image;
+                                                        }
+                                                        @*<li><a data-target="#pic_@counts" video-src="@videoSrc" data-toggle="tab"><span style="@videoClass" class="video-tumb-wrapper"><i class="fa fa-play" aria-hidden="true"></i></span><img src="@item.Image" /></a></li>*@
+                                                        <li class="thumb"><a data-target="#pic_@counts" video-src="@videoSrc" data-toggle="tab" data-update="" data-image="@productImage" data-zoom-image="@productImage" href="#" class="elevatezoom-gallery"><span style="@videoClass" class="video-tumb-wrapper"><i class="fa fa-play" aria-hidden="true"></i></span><img src="@item.Image" /></a></li>
+                                                        counts++;
+                                                    }
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                    @*<div class="clearfix"></div>
+                                        @if (ViewBag.isLeadEnable)
+                                        {
+                                            <div class="mt-4 col-lg-12 pr-0 pl-0 pr-md-3 pl-md-3 pl-xl-3 pr-xl-3 pl-lg-3 pr-lg-3 form-group wrapper-need-help"> Need help? <a href="javascript:return void(0);" onclick="leadsandInqueryPop(0)"> Contact us </a>  and we’ll make sure everything fits. </div>
+                                        }*@
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12 col-sm-12 float-left pr-0 pr-md-3 pr-lg-3 pr-xs-3 pl-0 pl-md-3 pl-lg-3 pl-xs-3 form-section item-contentconfig-area">
+                                <h3>Choose your custom fit</h3>
+                                <div id="categoryProductFilter" class="col-lg-12 col-md-12 col-sm-12 form-group mobile-controlled wrapper-product-filters">
+                                    <div class="col-lg-12 mobile-controlled">
+                                        <div class="col-12 mobile-controlled pl-0 pr-0">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 form-group px-0 pl-3" id="divYear">
+                                                <label>Select Year </label>
+                                                <select class="form-control" id="ddlYear" onchange="GetMakeByYear()">
+                                                    <option value="-1">-- Year --</option>
+                                                </select>
+                                            </div>
+                                            <div id="divMake" class="col-lg-12 col-md-12 col-sm-12 px-0 pl-3 form-group">
+                                                <label>Select Make </label>
+                                                <select class="form-control" id="ddlMake" onchange="GetModelByMakeAndYear()" disabled><option>-- Make --</option></select>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                            <div id="divModel" class="col-lg-12 col-md-12 col-sm-12 px-0 pl-3 form-group">
+                                                <label>Select Model </label>
+                                                <select class="form-control" id="ddlModel" onchange="GetSubModelByModel()" disabled><option>-- Model --</option></select>
+                                            </div>
+                                            <div id="divCaptureFitmentGaps" class="col-lg-12 wrapper-need-help"></div>
+                                            <div id="divConfigSelector"></div>
+                                            <div id="divFeatures" style="display:none"></div>
+                                            <div id="colourSelectContainer" class="col-12"></div>
+                                            <div id='modifiersContainer' style="display:none">
+                                                @if (Model.Modifiers != null)
+                                                {
+                                                    for (int i = 1; i <= Model.Modifiers.Count; i++)
+                                                    {
+                                                        <div id="modifier_selector_@i" class="col-lg-12 text-align-right mt-3 pl-0 pr-0"></div>
+                                                    }
+                                                    <div id="personalize-mod-container" class="col-lg-12 text-align-right mt-3"></div>
+                                                }
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Draw Configurator results*@
+                        <div class="col-lg-12 col-md-12 col-sm-12 mt-lg-4 py-3 d-inline-block px-0 px-lg-3" id="divItemDeatisl"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="clearfix"></div>
+    <div class="col-12">
+        <hr class="" />
+    </div>
+    <div class="clearfix"></div>
+    <div class="container-fluid  mt-5 wrapper-pattern-row wrapper-tab-pils ">
+        @{
+            var visibilityDescription = "";
+            var visibilityDocument = "";
+            var visibilityProducts = "";
+            var visibilityArticles = "";
+            var visibilityTabs = "";
+            var visibilityAttributes = "";
+            var visibilityApplications = "";
+
+
+            if (string.IsNullOrEmpty(Model.LongDescription))
+            {
+                visibilityDescription = "display:none !important";
+            }
+            if (Model.ProductDocuments == null)
+            {
+                visibilityDocument = "display:none !important";
+            }
+            if (Model.RelatedProducts == null)
+            {
+                visibilityProducts = "display:none !important";
+            }
+            if (Model.Articles == null)
+            {
+                visibilityArticles = "display:none !important";
+            }
+            if (Model.Tabs == null)
+            {
+                visibilityTabs = "display:none !important";
+            }
+
+            if (Model.ProductApplications == null)
+            {
+                visibilityApplications = "display:none !important";
+            }
+
+            if (Model.ProductAttributes == null)
+            {
+                visibilityAttributes = "display:none !important";
+            }
+
+        }
+        <div class="container px-0 mb-3" id="additionalContentContainer">
+            <div class="justify-content-md-center">
+                <div class="px-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 px-0 mobile-controlled wrapper-tabs-pils-section">
+                        <input id="tab1" type="radio" class="tabs-pils" onclick="loadTabs(this)" prefer="content1" name="tabs" checked style="@visibilityDescription">
+                        <label for="tab1" style="@visibilityDescription">Description</label>
+                        <input id="tab5" class="tabs-pils" onclick="loadTabs(this)" prefer="content5" type="radio" name="tabs" style="@visibilityAttributes">
+                        <label for="tab5" style="@visibilityAttributes">Attributes</label>
+                        <input id="tab2" class="tabs-pils" onclick="loadTabs(this)" prefer="content2" type="radio" name="tabs" style="@visibilityDocument">
+                        <label for="tab2" style="@visibilityDocument">Documents</label>
+                        <input id="tab3" class="tabs-pils" onclick="loadTabs(this)" prefer="content3" type="radio" name="tabs" style="@visibilityProducts">
+                        <label for="tab3" style="@visibilityProducts">Related</label>
+                        <input id="tab4" class="tabs-pils" onclick="loadTabs(this)" prefer="content4" type="radio" name="tabs" style="@visibilityApplications">
+                        <label for="tab4" style="@visibilityApplications">Vehicles</label>
+                        <input id="tab6" class="tabs-pils" onclick="loadTabs(this)" prefer="content6" type="radio" name="tabs" style="@visibilityArticles">
+                        <label for="tab6" style="@visibilityArticles">Support</label>
+
+
+                        @if (Model.Tabs != null)
+                        {
+                            @await Html.PartialAsync("ProductTab", Model.Tabs)
+                        }
+
+                        <section id="content1" class="tabs-content-wrapper" style="@visibilityDescription">
+                            <div class="col-lg-12 col-md-12">
+                                @Html.Raw(Model.LongDescription)
+                            </div>
+                        </section>
+                        <section id="content5" class="products tabs-content-wrapper" style="@visibilityAttributes">
+                            <div class="col-lg-12 pl-0 pr-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordred table-striped">
+                                        @*<thead>
+                                            <tr>
+                                                <th scope="col" class="col_0">Image</th>
+                                                <th scope="col" class="col_1">Attribute</th>
+                                                <th scope="col" class="col_1">Type</th>
+                                                <th scope="col" class="col_1">Value(s)</th>
+                                            </tr>
+                                        </thead>*@
+                                        <tbody>
+                                            @if (Model.ProductAttributes != null)
+                                            {
+                                                foreach (var item in Model.ProductAttributes)
+                                                {
+                                                    <tr>
+                                                        @if(!string.IsNullOrEmpty(item.attributeDefaultImage))
+                                                        {
+                                                            <td class="text-align-center tble-tr-image"><a href="javascript: return void(0);"><img src="@item.attributeDefaultImage" /></a></td>
+                                                        }
+                                                        
+                                                        <td data-label="Attribute Name : &nbsp;">@item.attributeName</td>
+                                                        @*<td data-label="Attribute Type : &nbsp;">@item.attributeType</td>*@
+                                                        <td data-label="Attribute Value : &nbsp;">@item.attributeOptionValue</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content2" class="tabs-content-wrapper product-document" style="@visibilityDocument">
+                            <div class="col-lg-12 pl-0 pr-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordred table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="col_0">Label</th>
+                                                <th scope="col" class="col_1">Document</th>
+                                                <th scope="col" class="col_2">Size</th>
+                                                <th scope="col" class="col_3">Type</th>
+                                                <th class="col grid-button-wrapper-header"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.ProductDocuments != null)
+                                            {
+                                                foreach (var item in Model.ProductDocuments)
+                                                {
+                                                    <tr>
+                                                        <td>@item.Label</td>
+                                                        <td>@item.DocumentName</td>
+                                                        <td>@item.Bytes KB </td>
+                                                        <td>@item.Type</td>
+                                                        <td class="text-align-center tbl-button-wrapper "><a class="grid-button" target="_blank" href="@item.Location">Download</a></td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content3" class="products tabs-content-wrapper" style="@visibilityProducts">
+                            <div class="col-lg-12 pl-0 pr-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordred table-striped">
+                                        <thead>
+                                            <tr>
+                                                @*<th scope="col" class="text-align-center col_img_th"></th>*@
+                                                <th scope="col" class="col_0">Product Code</th>
+                                                <th scope="col" class="col_1">Product</th>
+                                                <th scope="col" class="col_0">Type</th>
+                                                <th scope="col" class="col_1">Discount Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.RelatedProducts != null)
+                                            {
+                                                foreach (var item in Model.RelatedProducts)
+                                                {
+                                                    <tr>
+                                                        @*<td class="text-align-center tble-tr-image"><a href="javascript: return void(0);"><img src="@item.Image" onclick="jumpProductView(@item.RelatedProductId,true,true,'@item.ProductName')" /></a></td>*@
+                                                        <td>@item.RelatedProductCode</td>
+                                                        <td>@item.RelatedProductName</td>
+                                                        <td>@item.TypeName</td>
+                                                        <td></td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content4" class="tabs-content-wrapper" style="@visibilityApplications">
+                            <div class="col-lg-12 col-md-12 pl-0 pr-0">
+                                <div class="table-responsive table-mobile">
+                                    <table class="table table-bordred table-striped wrapper-tbl-issue-finder">
+                                        <thead>
+                                            <tr>
+                                                @*<th scope="col" class="text-align-center col_img_th"></th>*@
+                                                <th scope="col" class="col_0 w-25pc">Application</th>
+                                                @*<th scope="col" class="col_1 text-center">Fitmants</th>*@
+                                                <th scope="col" class="col_1 w-15pc">Make</th>
+                                                <th scope="col" class="col_1 w-15pc">Model</th>
+                                                <th scope="col" class="col_1 w-15pc">Year</th>
+                                                <th scope="col" class="col_1">Description</th>
+                                                <th class="th_2 w-25pc"></th>
+                                                @*<th scope="col" class="text-align-right button-wrapper-header"></th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.ProductApplications != null)
+                                            {
+
+                                                foreach (var item in Model.ProductApplications)
+                                                {
+
+                                                    <tr>
+                                                        <td>@item.ApplicationName</td>
+                                                        @*<td class="col text-center grid-button-wrapper">
+                                                            <span onclick="getApplicationFitments(@Model.ProductId, @item.ApplicationId, '@item.ApplicationName')" title="Application Fitments"><i class="fa fa-clone color-orange"></i></span>
+                                                        </td>*@
+                                                        <td>@item.Make</td>
+                                                        <td>@item.Model</td>
+                                                        <td>@item.Year</td>
+                                                        <td>@item.ProductApplicationDescription</td>
+                                                        <td class="col text-center grid-button-wrapper">
+                                                            <span onclick="getApplicationFitments(@Model.ProductId, @item.ApplicationId, '@item.ApplicationName')" class="common-orange-button px-4"><i class="fas fa-info-circle"></i> More Info</span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content4" class="tabs-content-wrapper" style="@visibilityArticles">
+                            <div class="col-lg-12 col-md-12 pl-0 pr-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordred table-striped wrapper-tbl-issue-finder">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-align-center col_img_th"></th>
+                                                <th scope="col" class="col_0">Name</th>
+                                                <th scope="col" class="col_1">Reference Number</th>
+                                                <th scope="col" class="col_1">Type</th>
+                                                <th scope="col" class="col_1">Status</th>
+                                                <th scope="col" class="text-align-right button-wrapper-header"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Articles != null)
+                                            {
+
+                                                foreach (var item in Model.Articles)
+                                                {
+
+                                                    <tr>
+                                                        <td class="text-align-center tble-tr-image" data-label="Label : &nbsp;">
+                                                            @if (!string.IsNullOrEmpty(item.imageThumb))
+                                                            {
+                                                                <img src="@item.imageThumb" />
+                                                            }
+                                                        </td>
+                                                        <td>@item.serviceArticleName</td>
+                                                        <td>@item.ReferenceNumber</td>
+                                                        <td>@item.type</td>
+                                                        <td>@item.Status</td>
+                                                        @*<td data-label="Title (issue) : &nbsp;">@item.issue <br />@item.type</td>
+                                        <td data-label="">@item.description</td>*@
+                                                        <td><div class="text-align-right text-primary cursor-pointer pr-2"><button class="grid-button" onclick="loadArticleWindow('@item.issue','This is where content goes to help the user install the product.')">View</button></div></td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")
+
+@section Scripts
+{
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/content.js"></script>*@
+<script type="text/javascript">
+    //$("input[type='number']").inputSpinner();
+    var selectedAttributeArray = [];
+    var jsonresponse = {};
+
+        $(document).ready(function () {
+            let productId = @Model.ProductId;
+            let isUniversal = false;
+            
+            LoadYearPopup(productId, isUniversal);
+
+            //setCookieValuesToAppProp();
+            //debugger;
+            //setAutoConfigurator(productId, isUniversal);
+
+            var imgWidth = $('.zoom-img').width();
+            var imgHeight = $('.zoom-img').height();
+
+            if ($(window).width() < 992) {
+                var zoomtype = 'lens';
+            } else {
+                var zoomtype = 'window';
+            }
+
+            $("#zoom_03").ezPlus({
+                gallery: 'gallery_01',
+                cursor: 'pointer',
+                galleryActiveClass: "active",
+                imageCrossfade: true,
+                scrollZoom: true,
+                borderColour: '#eee',
+                zoomWindowOffsetX: 23,
+                zoomWindowOffsetY: -2,
+                zoomWindowHeight: imgHeight,
+                zoomWindowWidth: imgWidth,
+                responsive: true,
+                zoomType: zoomtype,
+                lensSize: 200
+            });
+    });
+
+</script>
+
+
+}
+
+

@@ -30,13 +30,13 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore PHXCOM.VehiclesDemo.sln
+        run: dotnet restore PIMento.Demo.sln
 
       - name: Build
-        run: dotnet build PHXCOM.VehiclesDemo.sln --no-restore --configuration Release
+        run: dotnet build PIMento.Demo.sln --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test PHXCOM.VehiclesDemo.sln --no-build --configuration Release --verbosity normal
+        run: dotnet test PIMento.Demo.sln --no-build --configuration Release --verbosity normal
 
       - name: Dependency audit
-        run: dotnet list PHXCOM.VehiclesDemo.Web/PHXCOM.VehiclesDemo.Web.csproj package --vulnerable --include-transitive
+        run: dotnet list PIMento.Demo.Web/PIMento.Demo.Web.csproj package --vulnerable --include-transitive

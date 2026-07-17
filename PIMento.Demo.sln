@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIMento.Demo.Web", "PIMento.Demo.Web\PIMento.Demo.Web.csproj", "{6418FF02-B130-468B-BB02-578077F71AA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIMento.Demo.Web.Tests", "PIMento.Demo.Web.Tests\PIMento.Demo.Web.Tests.csproj", "{B4078D03-4176-43CD-9D84-25C5049EC51F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Debug|x64.Build.0 = Debug|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Debug|x86.Build.0 = Debug|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Release|x64.ActiveCfg = Release|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Release|x64.Build.0 = Release|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Release|x86.ActiveCfg = Release|Any CPU
+		{6418FF02-B130-468B-BB02-578077F71AA4}.Release|x86.Build.0 = Release|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Debug|x64.Build.0 = Debug|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Debug|x86.Build.0 = Debug|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Release|x64.ActiveCfg = Release|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Release|x64.Build.0 = Release|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Release|x86.ActiveCfg = Release|Any CPU
+		{B4078D03-4176-43CD-9D84-25C5049EC51F}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F2A9B535-D92D-49DD-A11C-1D196878F81F}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://dev.azure.com/ebizexpert
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = PIMento.Demo.Web\\PIMento.Demo.Web.csproj
+		SccProjectName1 = PIMento.Demo.Web
+		SccLocalPath1 = PIMento.Demo.Web
+	EndGlobalSection
+EndGlobal

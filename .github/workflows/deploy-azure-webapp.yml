@@ -15,7 +15,7 @@ concurrency:
 env:
   DOTNET_NOLOGO: true
   WEBAPP_NAME: pimento-demo-v2
-  PROJECT_PATH: PHXCOM.VehiclesDemo.Web/PHXCOM.VehiclesDemo.Web.csproj
+  PROJECT_PATH: PIMento.Demo.Web/PIMento.Demo.Web.csproj
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore PHXCOM.VehiclesDemo.sln
+        run: dotnet restore PIMento.Demo.sln
 
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ github.workspace }}/publish

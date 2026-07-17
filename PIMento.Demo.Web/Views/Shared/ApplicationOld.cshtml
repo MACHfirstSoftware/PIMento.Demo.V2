@@ -1,0 +1,73 @@
+@model List<PHXCOM.PlatformSDK.Models.Product>
+@{
+    ViewData["Title"] = "Application Filter Products";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Dictionary<string, string> breadCrumbs = ViewBag.breadCrumbs;
+    var appYear = ViewBag.appYear;
+    var appModel = ViewBag.appModel;
+    var appMake = ViewBag.appMake;
+    var redirectSlug = "";
+    if (breadCrumbs.Count > 0)
+    {
+        KeyValuePair<string, string> lastBreadCrumbElement = breadCrumbs.FirstOrDefault();
+        redirectSlug = string.Format("/{0}", lastBreadCrumbElement.Key);
+    }
+    else
+    {
+        redirectSlug = "/";
+    }
+}
+
+@*<div id="syndicationBreadcrumbContainer" class="breadcrumbs breadcrumbs-height">
+    @await Html.PartialAsync("BreadCrumbView", breadCrumbs)
+</div>*@
+    <div class="wrapper-catelog">
+        <div class="container">
+            <div class="col-12 mt-4 pt-3">
+                <h1 class="page-header text-left w-100 d-inline-block"><span class="float-left">@string.Format("Showing Parts & Accessories for your {0} {1} {2}", appYear, appMake, appModel)</span> <a href="@redirectSlug" onclick="return removeFilter()" class="pl-4 remove-filter float-right float-lg-left"><i class="far fa-times-circle mr-1"></i> Remove Filter</a></h1>
+            </div>
+            <div class="mt-3 mb-5 d-inline-block w-100">
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+
+                        <div class="col-md-6 col-lg-3 col-12 list-item mb-1 text-center pb-md-3 pb-5 mt-2 mt-md-0 d-inline-block float-left">
+                            <a href="/@item.ProductCode" class="d-inline-block">
+                                <div class="wrapper-image">
+                                    @if (item.ImageThumb != null)
+                                    {
+                                        <img src="@item.ImageThumb" class="w-100" />
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/no-image.png" class="no-image w-100" />
+                                    }
+                                </div>
+                                <h2 class="mt-5 mt-md-0">@item.ProductName</h2>
+                            </a>
+                        </div>
+
+                    }
+
+                }
+                else
+                {
+                    <h4 class="d-inline-block w-100 content-empty-message no-product-msg"> Sorry.  We currently do not have any products for this application.</h4>
+                    <div class="text-center w-100 d-inline-block mt-4 pt-2 pb-1">
+                        <a href="/Golf-Cart-Parts-Accessories" class="common-orange-button px-4"><i class="fas fa-list-ul"></i> Shop All</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setCookieValuesToAppProp();
+        });
+    </script>
+}

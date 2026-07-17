@@ -1,0 +1,45 @@
+@model PHXCOM.PlatformSDK.Models.Inquiry
+@{
+    ViewData["Title"] = "Contact";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="col-12 my-4 py-3">
+        <h1 class="page-header text-center text-md-left">get in touch with us</h1>
+    </div>
+    <form id="frmContactInquiry">
+
+        <div class="col-12 px-0">
+            <div class="col-md-6 px-0 float-left pb-md-5">
+                <div class="col-md-12 float-left mb-3">
+                    <label for="fname">First Name</label><span class="text-danger"> *</span>
+                    <input type="text" class="form-control" required id="fname" name="firstname" placeholder="Your name..">
+                </div>
+                <div class="col-md-12 float-left mb-3">
+                    <label for="lname">Last Name</label><span class="text-danger"> *</span>
+                    <input type="text" class="form-control" required id="lname" name="lastname" placeholder="Your last name..">
+                </div>
+                <div class="col-md-12 float-left mb-3">
+                    <label for="email">Email Address</label><span class="text-danger"> *</span>
+                    <input type="text" class="form-control" required id="email" name="email" placeholder="Your email address..">
+                </div>
+                <div class="col-md-12 float-left mb-3">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Your phone number..">
+                </div>
+            </div>
+
+            <div class="col-md-6 px-0 float-left pb-5">
+                <div class="col-md-12 float-left mb-3">
+                    <label for="subject">Request or Comments</label><span class="text-danger"> *</span>
+                    <textarea id="subject" class="form-control" name="subject" placeholder="Write something.." style="height:203px" required></textarea>
+                </div>
+                <div class="col-12 d-inline-block text-right pt-3">
+                    <button type="button" class="btn btn-primary common-orange-button py-2 px-4" onclick="submitInquiry()">Submit</button>
+                </div>
+            </div>
+        </div>
+        
+    </form>
+</div>

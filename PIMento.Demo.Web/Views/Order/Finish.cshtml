@@ -1,0 +1,138 @@
+@model PHXCOM.PlatformSDK.Models.CurrentOrder
+@{
+    ViewData["Title"] = "Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Model.AllowCartItemChanges = false;
+    if (Model.ShippingInfo == null)
+    {
+        Model.ShippingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
+    }
+
+
+}
+
+@if (ViewBag.OrderFinish == null)
+{
+    <div class="breadcrumbs set-center d-inline-block text-left col-12 mb-0 form-group">
+        @await Html.PartialAsync("CartBreadCrum", 3)
+    </div>
+}
+<div class="container">
+    @if (Model.OrderItems != null && Model.OrderItems.Count > 0)
+    {
+
+        @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+        {<div class="logo-img col-12 mt-3 pl-0 form-group mb-0 pl-3">
+                <a href="/index"> <img src="@Model.CompanyLogo" width="300" /></a>
+            </div>
+        }
+        else
+        {
+            <div class="logo-img col-12 mt-3 pl-0 form-group mb-0 pl-3">
+                <a href="/index">
+                    <label class="company-name">@Model.CompanyName</label>
+                </a>
+            </div>
+        }
+
+        <div class="wrapper-confirmation mt-3">
+            <div class="col-12 d-inline-block px-0">
+                @if (ViewBag.FromPastOrder)
+                {
+                    <div class="d-inline-block w-100 text-right">
+                        <a href="/Account/Orders" class="icon-color-org"> <i class="fas fa-chevron-left "></i> Back to Order History</a>
+                    </div>
+
+                    <h1 class="page-header mt-2">ORDER @Model.Id  </h1>
+                }
+                else
+                {
+                    <h1 class="page-header">ORDER @Model.Id HAS BEEN PLACED SUCCESSFULLY </h1>
+                }
+
+
+            </div>
+            <div class="mt-4 d-inline-block w-100 px-0">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12 d-inline-block float-left billing-address">
+                    <h3 class="text-uppercase"> Billing Address</h3>
+                    <span class="mt-1 d-inline-block"> @Model.BillingInfo.FirstName @Model.BillingInfo.LastName </span>
+                    <br />
+                    <span> @Model.BillingInfo.Address1 </span>
+                    <br />
+                    @if (!string.IsNullOrEmpty(Model.BillingInfo.Address2))
+                    {
+                        <span> @Model.BillingInfo.Address2 </span><br />
+                    }
+                    <span> @Model.BillingInfo.City, @Model.BillingInfo.StateName @Model.BillingInfo.PostalCode  </span>
+                    <br />
+                    <span> @Model.BillingInfo.CountryName  </span>
+
+                </div>
+
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12 d-inline-block float-left shipping-address mt-3 mt-sm-0">
+                    <h3 class="text-uppercase"> Shipping Address</h3>
+                    <span class="mt-1 d-inline-block"> @Model.ShippingInfo.FirstName @Model.ShippingInfo.LastName </span>
+                    <br />
+                    <span> @Model.ShippingInfo.Address1 </span>
+                    <br />
+                    @if (!string.IsNullOrEmpty(Model.ShippingInfo.Address2))
+                    {
+                        <span> @Model.ShippingInfo.Address2 </span><br />
+                    }
+                    <span> @Model.ShippingInfo.City, @Model.ShippingInfo.StateName @Model.ShippingInfo.PostalCode  </span>
+                    <br />
+                    <span> @Model.ShippingInfo.CountryName  </span>
+                    <br />
+                    <br />
+                    <span> Ship via : @Model.ShippingMethodName  </span>
+                </div>
+            </div>
+            <div class="col-12 d-inline-block mt-3 px-0">
+                <h3 class="section-header py-2 px-3 text-center colo text-white bg-dark">YOUR ORDER CONTAINS</h3>
+            </div>
+            <div class="row d-inline-block mt-4">
+                <div class="col-12 d-inline-block">
+
+                    <div id="cartItemContainer">
+                        @await Html.PartialAsync("CurrentOrderItemView", Model)
+                    </div>
+                </div>
+            </div>
+            <div class="row wrapper-cart-shipping-info mt-5 mb-4">
+                <div class="col-md-8 col-12">
+                    <div class="row form-group mb-0">
+                        <div class="col-12">
+                            <button class="btn btn-primary common-button px-4  float-left bg-color-black" type="button" onclick="window.location.href='/Catalog'">Shop for More</button>
+                        </div>
+
+                    </div>
+                    <div class="col-12 px-0 mt-2">
+
+                    </div>
+                </div>
+                <div class="col-md-4 col-12 pl-md-5 pr-md-0 mt-3 mt-md-0">
+                    <div id="curentOrderInfo" class="text-right row float-right col-12  mx-auto">
+                        @await Html.PartialAsync("CurrentOrderInfo", Model)
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            sessionStorage.removeItem('cartCount');
+            orderEntry.clearOrderSession();
+        });
+    </script>
+
+}
+

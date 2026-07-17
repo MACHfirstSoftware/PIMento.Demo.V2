@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\PHXCOM.VehiclesDemo.Web.props" />
-</Project>

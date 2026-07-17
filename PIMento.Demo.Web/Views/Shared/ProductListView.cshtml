@@ -1,0 +1,35 @@
+
+@model List<PHXCOM.PlatformSDK.Models.Product>
+@{
+    Layout = null;
+}
+
+
+@if (Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+
+        <div class="col-md-6 col-lg-3 col-12 list-item mb-1 text-center mt-2 mt-md-0 pb-md-3 mb-5">
+            <a href="/products/@item.Slug" class="d-inline-block">
+                <div class="wrapper-image">
+                    @if (item.ImageThumb != null)
+                    {
+                        <img src="@item.ImageThumb" />
+                    }
+                    else
+                    {
+                        <img src="~/images/no-image.png" class="no-image" />
+                    }
+                </div>
+                <h2 class="mt-5 mt-md-0">@item.ProductName</h2>
+                @if (!string.IsNullOrEmpty(item.AltDescription))
+                {
+                    <h3 class="mt-5 mt-md-0"> @item.AltDescription</h3>
+                }
+            </a>
+        </div>
+
+        }
+
+    }

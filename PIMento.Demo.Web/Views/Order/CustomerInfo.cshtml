@@ -1,0 +1,165 @@
+
+@model PHXCOM.PlatformSDK.Models.CurrentOrder
+
+@{
+    ViewData["Title"] = "Customer Information";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (Model.ShippingInfo == null)
+    {
+        Model.ShippingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
+    }
+
+    string disabled = EbizClient.LoginSession.CurrentLogin().LoginSuccess ? "disabled" : string.Empty;
+
+    Model.AllowCartItemChanges = false;
+
+    string notifyChecked = Model.ContactNotify == true ? "checked" : "";
+
+}
+
+<div class="breadcrumbs">
+    <div class="container">
+        @if (ViewBag.AllowNextLevel)@await Html.PartialAsync("CartBreadCrum", 4)
+        else @await Html.PartialAsync("CartBreadCrum", 1)
+    </div>
+</div>
+
+<div class="container">
+    @if (Model.OrderItems != null && Model.OrderItems.Count > 0)
+    {
+        <div class="row">
+            <div class="col-lg-7 col-12 float-left d-inline-block form-group">
+                <div class="row wrapper-cart-cust-info">
+                    <div class="col-12 d-inline-block">
+                        @*@if (Model.CompanyLogo != "" && Model.CompanyLogo != null)
+                        {
+                            <div class="logo-img col-12 mt-3 pl-0 form-group mb-0 pl-3">
+                                <a href="/index"> <img src="@Model.CompanyLogo" width="300" /></a>
+                            </div>
+                        }
+                        else @if (Model.CompanyName != "" && Model.CompanyName != null)
+                   {
+                    <a href="/index">
+                        <label class="ml-3 company-name">@Model.CompanyName</label>
+                    </a>
+                }*@
+                        <div class="col-md-5 col-12 float-left d-inline-block pl-0 mt-3">
+                            <h3 class="section-title py-2 px-3 float-left">Customer Information</h3>
+                        </div>
+
+                        <div class="col-md-7 col-12 float-left mt-3" id="loginStatusNotifier">
+                            @if (!EbizClient.LoginSession.CurrentLogin().LoginSuccess && !ViewBag.AllowNextLevel)
+                            {
+                                <div class="col-12 form-group pr-0">
+                                    <label class="float-right mt-1 mb-0"> If you already have an account, please <a href="javascript: cartEntry.redirectToLogin()" class="icon-color-org">login</a></label>
+                                </div>
+                            }
+                            else if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
+                            {
+                                <div class="col-12 form-group pr-0">
+                                    <label class="float-right mt-1 mb-0"> Not you? Please <a href="javascript:void(0)" onclick="account.logout(true)" class="icon-color-org">logout</a></label>
+                                </div>
+                            }
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="row form-group mt-4">
+
+                            <div class="col-12">
+                                <form id="frmCustomerMainInfo">
+                                    <div class="col-md-12 col-12 float-left mb-3 mb-md-0">
+                                        <input type="text" @disabled value="@(Model.ShippingInfo.Email)" required id="txtEmail" name="txtEmail" placeholder="Your Email Address" class="form-control" onfocusout="cartEntry.tryContactVerify(this)" />
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 px-2">
+                                <div class="col-12 wrapper-checkbox pl-5 mt-2 ml-2 ml-md-0 form-group">
+                                    <input @notifyChecked type="checkbox" id="chkOffersDiscount" />
+                                    <label class="styled-checkmark"></label>
+                                    <label for="chkOffersDiscount" class="ml-2 pr-2">Send me information on special offers and discounts</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row form-group mb-0">
+                            <div class="col-12">
+                                <h5 class="inner-sub-header px-3">Shipping Address</h5>
+                            </div>
+                            @await Html.PartialAsync("Address", Model.ShippingInfo)
+                        </div>
+                        <div class="col-md-12 col-12 float-left mb-3 mb-md-0">
+                            <input type="text" value="@(Model.ShippingInfo.Phone)" required id="txtMobile" name="txtMobile" placeholder="Phone (optional)" class="form-control masked-phone" />
+                        </div>
+                        <div class="col-12 mt-md-4 text-md-right text-center d-inline-block mt-3">
+                            @*<a href="/Order/Cart" class="float-left font-family-oswald-light icon-color-org mt-2"><i class="fas fa-angle-left"></i> &nbsp; Return to Cart</a>
+                            <button type="button" class="btn btn-primary rounded-0 common-orange-button float-right" onclick="orderEntry.setShippingInfo()">Next > Shipping & Payment</button>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-inline-block float-left payment-section">
+                <div class="col-12">
+                    <div id="cartItemContainer">
+                        @await Html.PartialAsync("CurrentOrderItemView", Model)
+                    </div>
+                    <div id="curentOrderInfo" class="text-right row float-right col-12 mx-auto px-md-0 col-md-12 mt-3 pt-2">
+                        @await Html.PartialAsync("CurrentOrderInfo", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @await Html.PartialAsync("NoCartItemContainer")
+    }
+</div>
+
+
+<!-- Verification Modal -->
+<div id="verifyModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header d-inline-block">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5 class="section-title ">Enter Verification Code</h5>
+            </div>
+            <div class="modal-body form-group">
+
+                <h6 class="section-title ">Quick Checkout</h6>
+
+                <label id="verification-text" class="mt-1">Looks like you are already a customer!  Enter the code we just sent to your <span id="contactType">email</span> to securely pull up your account.</label>
+                <div id="verifyInputs" class="d-inline-block mt-2 w-100">
+                    <input type="text" class="form-control w-50 mt-1 d-inline-block float-left" maxlength="6" /> <label style="display:none" id="validationError" class="text-danger ml-3 mt-2 float-left">Invalid Code</label>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-outline-dark px-4 bg-color-black" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary common-button bg-color-org  px-4" onclick="cartEntry.verificationConfirm()">Validate</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")
+
+@section scripts {
+
+    @if (!string.IsNullOrEmpty(Model.ShippingInfo.CountryCode))
+    {
+        <script>
+                 generalHandlers.getStatesByCountry('@(Model.ShippingInfo.CountryCode)','@Model.ShippingInfo.StateAbbr');
+        </script>
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setCookieValuesToAppProp();
+        });
+        
+    </script>
+}

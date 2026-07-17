@@ -28,7 +28,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Build
-        run: dotnet build PHXCOM.VehiclesDemo.sln --configuration Release
+        run: dotnet build PIMento.Demo.sln --configuration Release
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
