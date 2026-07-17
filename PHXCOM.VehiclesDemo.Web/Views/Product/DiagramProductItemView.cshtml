@@ -8,10 +8,8 @@
     decimal price = 0;
     bool hasImage = false;
     string checkItem = " enabled";
-    string imageHeader = "Image";
 
     //string selectDisable = ViewBag.isCartTypeCheck == true ? "disabled" : "";
-    string selected = "";
     //int diagramId = 42;
 
 }
@@ -24,11 +22,9 @@
             @foreach (var product in Model.Items)
             {
                 //++diagramId;
-                imageHeader = "";
                 if (!string.IsNullOrEmpty(product.ItemImage))
                 {
                     hasImage = true;
-                    imageHeader = "Image";
                 }
                 else { hasImage = false; }
 

@@ -16,15 +16,19 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace PHXCOM.VehiclesDemo.Web.Controllers
 {
     public class HomeController : Controller
     {
         private IMemoryCache _cache;
-        public HomeController(IMemoryCache memoryCache)
+        private readonly IConfiguration _configuration;
+
+        public HomeController(IMemoryCache memoryCache, IConfiguration configuration)
         {
             this._cache = memoryCache;
+            _configuration = configuration;
         }
 
         [HttpGet("/Index")]
@@ -33,16 +37,33 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
         public async Task<IActionResult> Index()
         {
             EbizClient.Session.SetSlugSession(new Dictionary<string, string>());
-            var featureResponse = await EbizClient.Feature.GetFeaturesAsync();
-            var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
-            List<FilterProp> makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content);
-            List<Feature> features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content);
-            return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
+
+            try
+            {
+                var featureResponse = await EbizClient.Feature.GetFeaturesAsync();
+                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
+                List<FilterProp> makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
+                List<Feature> features = JsonUtil.ListDeserialize<List<Feature>>(featureResponse.Content) ?? new List<Feature>();
+                return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
+            }
+            catch
+            {
+                return View(new Tuple<List<Feature>, List<FilterProp>>(new List<Feature>(), new List<FilterProp>()));
+            }
         }
 
         public async Task<IActionResult> Handler()
         {
             EbizClient.SetMemoryCacheProp(_cache);
+
+            var slugHostOverride = Environment.GetEnvironmentVariable("SLUG_HOST_OVERRIDE")
+                ?? _configuration["SlugHostOverride"];
+            if (!string.IsNullOrWhiteSpace(slugHostOverride))
+            {
+                HttpContext.Request.Host = new HostString(slugHostOverride);
+                HttpContext.Request.Headers["Host"] = slugHostOverride;
+            }
+
             var res = await EbizClient.GetSlug(HttpContext);
             
 
@@ -199,11 +220,13 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
                 {
                     EbizClient.Cache.FlushAllMemoryCache();
                     string baseUrl = "https://phxapi.azure-api.net/cache/";
-                    string response = await ExecuteAsyncDelete(baseUrl, "6c13591c7aa740fca940d54038e560eb", "72BC6E4F069F4BA3BD0EA34D7B0C9E0B");
+                    var cacheApiKey = AppConfig.GetRequired("CacheApi:ApiKey", "CACHE_API_KEY");
+                    var cacheSyndicateKey = AppConfig.GetRequired("CacheApi:SyndicateKey", "CACHE_SYNDICATE_KEY");
+                    await ExecuteAsyncDelete(baseUrl, cacheApiKey, cacheSyndicateKey);
 
                     return Json(true);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return Json(false);
                 }
@@ -231,7 +254,7 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
                     return await response.Content.ReadAsStringAsync();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
