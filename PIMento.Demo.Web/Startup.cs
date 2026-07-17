@@ -83,6 +83,19 @@ namespace PIMento.Demo.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            var slugHostOverride = Environment.GetEnvironmentVariable("SLUG_HOST_OVERRIDE")
+                ?? Configuration["SlugHostOverride"];
+
+            if (!string.IsNullOrWhiteSpace(slugHostOverride))
+            {
+                app.Use(async (context, next) =>
+                {
+                    context.Request.Host = new HostString(slugHostOverride);
+                    context.Request.Headers["Host"] = slugHostOverride;
+                    await next().ConfigureAwait(false);
+                });
+            }
+
               
 
             app.UseRouting();
