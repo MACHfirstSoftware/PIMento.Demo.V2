@@ -167,8 +167,78 @@ namespace PIMento.Demo.Web.Controllers
         [HttpPost("/Product/GetApplicationFilter")]
         public async Task<JsonResult> GetApplicationFilter(int year, string make, string model)
         {
-            var res = await EbizClient.Product.GetItemForLoadDropdownAsync(year, make, model);
-            return Json(res.Content);
+            try
+            {
+                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(year, make, model);
+                if (!string.IsNullOrWhiteSpace(res.Content))
+                {
+                    return Json(res.Content);
+                }
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                var apps = EbizClient.Application.GetApplications().ContentObject as List<Application>;
+                if (apps != null)
+                {
+                    var normalizedMake = make ?? string.Empty;
+                    var normalizedModel = model ?? string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(normalizedMake))
+                    {
+                        apps = apps.Where(a => string.Equals(a.Make, normalizedMake, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(normalizedModel))
+                    {
+                        apps = apps.Where(a => string.Equals(a.Model, normalizedModel, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    if (year > 0)
+                    {
+                        apps = apps.Where(a => a.Year == year).ToList();
+                    }
+
+                    object payload;
+                    if (string.IsNullOrWhiteSpace(normalizedMake))
+                    {
+                        payload = apps
+                            .Where(a => !string.IsNullOrWhiteSpace(a.Make))
+                            .Select(a => new { make = a.Make })
+                            .Distinct()
+                            .OrderBy(a => a.make)
+                            .ToList();
+                    }
+                    else if (string.IsNullOrWhiteSpace(normalizedModel))
+                    {
+                        payload = apps
+                            .Where(a => !string.IsNullOrWhiteSpace(a.Model))
+                            .Select(a => new { model = a.Model })
+                            .Distinct()
+                            .OrderBy(a => a.model)
+                            .ToList();
+                    }
+                    else
+                    {
+                        payload = apps
+                            .Select(a => new { year = a.Year })
+                            .Distinct()
+                            .OrderByDescending(a => a.year)
+                            .ToList();
+                    }
+
+                    var wrapped = JsonConvert.SerializeObject(new { value = payload });
+                    return Json(wrapped);
+                }
+            }
+            catch
+            {
+            }
+
+            return Json(JsonConvert.SerializeObject(new { value = new object[0] }));
         }
 
         [HttpPost("/Product/GetApplicationByYMM")]
