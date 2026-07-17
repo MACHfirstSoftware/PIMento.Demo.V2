@@ -52,8 +52,25 @@ namespace PIMento.Demo.Web.Controllers
 
             try
             {
-                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, null, null);
-                makes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content) ?? new List<FilterProp>();
+                var res = await EbizClient.Product.GetItemForLoadDropdownAsync(-1, string.Empty, string.Empty);
+
+                var parsedMakes = JsonUtil.ListDeserialize<List<FilterProp>>(res.Content);
+                if (parsedMakes == null || parsedMakes.Count == 0)
+                {
+                    try
+                    {
+                        var wrappedPayload = JObject.Parse(res.Content)["value"]?.ToString();
+                        if (!string.IsNullOrWhiteSpace(wrappedPayload))
+                        {
+                            parsedMakes = JsonUtil.ListDeserialize<List<FilterProp>>(wrappedPayload);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                makes = parsedMakes ?? new List<FilterProp>();
             }
             catch
             {
