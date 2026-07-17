@@ -84,7 +84,8 @@ namespace PIMento.Demo.Web
             app.UseStaticFiles();
 
             var slugHostOverride = Environment.GetEnvironmentVariable("SLUG_HOST_OVERRIDE")
-                ?? Configuration["SlugHostOverride"];
+                ?? Configuration["SlugHostOverride"]
+                ?? "demo.pimento.io";
 
             if (!string.IsNullOrWhiteSpace(slugHostOverride))
             {

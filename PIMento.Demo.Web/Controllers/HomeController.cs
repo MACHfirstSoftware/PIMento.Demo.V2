@@ -140,7 +140,8 @@ namespace PIMento.Demo.Web.Controllers
             EbizClient.SetMemoryCacheProp(_cache);
 
             var slugHostOverride = Environment.GetEnvironmentVariable("SLUG_HOST_OVERRIDE")
-                ?? _configuration["SlugHostOverride"];
+                ?? _configuration["SlugHostOverride"]
+                ?? "demo.pimento.io";
             if (!string.IsNullOrWhiteSpace(slugHostOverride))
             {
                 HttpContext.Request.Host = new HostString(slugHostOverride);
