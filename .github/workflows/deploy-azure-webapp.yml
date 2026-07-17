@@ -45,9 +45,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: production
-      url: https://${{ env.WEBAPP_NAME }}.azurewebsites.net
 
     steps:
       - name: Download artifact
@@ -57,8 +54,34 @@ jobs:
           path: ${{ github.workspace }}/publish
 
       - name: Deploy to Azure Web App
+        id: deploy
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ${{ github.workspace }}/publish
+
+      - name: Smoke test deployed routes
+        shell: pwsh
+        env:
+          DEPLOYED_URL: ${{ steps.deploy.outputs.webapp-url }}
+        run: |
+          $base = $env:DEPLOYED_URL
+          if ([string]::IsNullOrWhiteSpace($base)) {
+            $base = "https://${{ env.WEBAPP_NAME }}.azurewebsites.net"
+          }
+
+          $paths = @('/', '/Parts', '/Order/Cart')
+          foreach ($path in $paths) {
+            $uri = "$base$path"
+            try {
+              $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 60
+              if ($response.StatusCode -ge 400) {
+                throw "Smoke test failed for $uri with status $($response.StatusCode)"
+              }
+              Write-Host "$path -> $($response.StatusCode)"
+            }
+            catch {
+              throw "Smoke test failed for $uri. $($_.Exception.Message)"
+            }
+          }

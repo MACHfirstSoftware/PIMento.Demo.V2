@@ -34,18 +34,13 @@ namespace PHXCOM.VehiclesDemo.Web.Utils
 
                 // Init SmtpClient and send
                 SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net");
-                var sendGridApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-                if (string.IsNullOrWhiteSpace(sendGridApiKey))
-                {
-                    throw new InvalidOperationException("Missing SendGrid API key in environment variables.");
-                }
-
+                var sendGridApiKey = AppConfig.GetRequired("SendGrid:ApiKey", "SENDGRID_API_KEY");
                 NetworkCredential credentials = new NetworkCredential("apikey", sendGridApiKey);
                 smtpClient.Credentials = credentials;
                 await smtpClient.SendMailAsync(mailMsg);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

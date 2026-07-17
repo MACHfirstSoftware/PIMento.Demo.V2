@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
@@ -15,12 +11,8 @@ namespace PHXCOM.VehiclesDemo.Web.Utils
         {
             try
             {
-                var accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
-                var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
-                if (string.IsNullOrWhiteSpace(accountSid) || string.IsNullOrWhiteSpace(authToken))
-                {
-                    throw new InvalidOperationException("Missing Twilio credentials in environment variables.");
-                }
+                var accountSid = AppConfig.GetRequired("Twilio:AccountSid", "TWILIO_ACCOUNT_SID");
+                var authToken = AppConfig.GetRequired("Twilio:AuthToken", "TWILIO_AUTH_TOKEN");
                 string toNumber = ToNumber;
 
                 TwilioClient.Init(accountSid, authToken);
@@ -41,7 +33,7 @@ namespace PHXCOM.VehiclesDemo.Web.Utils
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
