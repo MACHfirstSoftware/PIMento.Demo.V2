@@ -52,12 +52,6 @@ namespace PIMento.Demo.Web.Controllers
             }
         }
 
-        [HttpGet("/Parts")]
-        public IActionResult Parts()
-        {
-            return RedirectToActionPermanent("Index");
-        }
-
         public async Task<IActionResult> Handler()
         {
             EbizClient.SetMemoryCacheProp(_cache);

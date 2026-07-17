@@ -43,15 +43,8 @@ namespace PIMento.Demo.Web
             });
             services.AddHttpContextAccessor();
 
-            var ebizClientId =
-                Environment.GetEnvironmentVariable("EBIZ_CLIENT_ID")
-                ?? Environment.GetEnvironmentVariable("PIMento_CLIENT_ID")
-                ?? AppConfig.GetRequired("Ebiz:ClientId", "EBIZ_CLIENT_ID");
-
-            var ebizClientSecret =
-                Environment.GetEnvironmentVariable("EBIZ_CLIENT_SECRET")
-                ?? Environment.GetEnvironmentVariable("PIMento_CLIENT_SECRET")
-                ?? AppConfig.GetRequired("Ebiz:ClientSecret", "EBIZ_CLIENT_SECRET");
+            var ebizClientId = AppConfig.GetRequired("Ebiz:ClientId", "PIMento_CLIENT_ID");
+            var ebizClientSecret = AppConfig.GetRequired("Ebiz:ClientSecret", "PIMento_CLIENT_SECRET");
             EbizClient.Connect(ebizClientId, ebizClientSecret);
 
         }
@@ -88,11 +81,6 @@ namespace PIMento.Demo.Web
                 endpoints.MapControllerRoute(
                     name: "root",
                     pattern: "",
-                    defaults: new { controller = "Home", action = "Index" });
-
-                endpoints.MapControllerRoute(
-                    name: "parts",
-                    pattern: "Parts",
                     defaults: new { controller = "Home", action = "Index" });
 
                 endpoints.MapControllerRoute(
