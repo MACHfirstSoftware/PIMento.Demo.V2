@@ -1,0 +1,408 @@
+﻿@model PHXCOM.PlatformSDK.Models.Product
+@{
+    string metaTitle = "";
+    string metaDescription = "";
+    string metakeyWords = "";
+    if (Model.ProductMetaData != null && Model.ProductMetaData.Count > 0 && !string.IsNullOrEmpty(Model.ProductMetaData[0].MetaTitle))
+    {
+        ViewData["Title"] = Model.ProductMetaData[0].MetaTitle;
+        metaTitle = Model.ProductMetaData[0].MetaTitle;
+        metaDescription = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaDescription) ? "" : Model.ProductMetaData[0].MetaDescription;
+        metakeyWords = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaKeywords) ? "" : Model.ProductMetaData[0].MetaKeywords;
+    }
+    else
+    {
+        ViewData["Title"] = Model.ProductName;
+    }
+
+    ViewData["Description"] = metaDescription;
+    ViewData["Keywords"] = metakeyWords;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Dictionary<string, string> breadCrumbs = ViewBag.breadCrumbs;
+
+    int modifiersCount = 0;
+    if (Model.Modifiers != null && Model.Modifiers.Count > 0) modifiersCount = Model.Modifiers.Count;
+}
+
+<input type="hidden" id="hdnProductId" value="@Model.ProductId" />
+<input type="hidden" id="hdnProductName" value="@Model.ProductName" />
+<input type="hidden" id="hdnisProductUniversal" value="@Model.IsUniversal" />
+<input type="hidden" id="hdnModifiersCount" value="@modifiersCount" />
+<input type="hidden" id="hdnProductTypeId" value="@Model.ProductTypeId" />
+<input type="hidden" id="hdnProductImageFull" value="@Model.ImageFull" />
+
+<div id='syndicateHolder'>
+
+    <div class="wrapper-page-full justify-content-md-center">
+        <div class="col-lg-12 col-md-12 col-sm-12 position-relative wrapper-search-description">
+            <div class="">
+                <div class="row wrapper-product pb-4">
+                    <div id="syndicationBreadcrumbContainer" class="breadcrumbs">
+                        <div class="container">@await Html.PartialAsync("BreadCrumbView", breadCrumbs)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="wrapper-map-product set-line-height">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pl-0 pr-0 item-contentconfig-area" id="productDetailContainer">
+                        <div class="col-lg-12 col-md-12 col-sm-12 pt-1 pl-md-3 pr-md-3 pl-lg-3 pr-lg-3 pl-xl-3 pr-xl-3">
+                            <h2 class="wrapper-product-header">@Model.ProductName</h2>
+
+                        </div>
+                        <div class="wrapper-product-description col-lg-12 col-md-12 col-sm-12 pl-md-3 pr-md-3 pl-lg-3 pr-lg-3 pl-xl-3 pr-xl-3">
+                            <p>@Model.ShortDescription</p>
+                        </div>
+                    </div>
+                    <div class="tab-pane active wrapper-img-map border-0" id="wrapperImgObject">
+                        <img class="w-100" src="@Model.ImageFull" id="diagramProductMainImg" />
+                    </div>
+                    <div class="clearfix"></div>
+                    <div>
+                        @await Html.PartialAsync("~/Views/Product/DiagramProductItemView.cshtml", Model)
+                    </div>
+                    @*@if (ViewBag.syncUserType == "dcom")
+                        {
+                            <div>
+                                <div class="col-lg-12 text-align-right wrapper-btn-addcart mt-3 pr-0">
+                                    <button type='button' onclick='proceedToCart()' id='btnAddToCart'><span class='signal'></span><i class='fab fa-opencart'></i><span class='wrapper-add-cart-txt'> Add to cart </span><div class='cart-loading'>Processing</div></button>
+                                </div>
+                            </div>
+                        }*@
+
+                    <div>
+                        <div class="col-12 mt-4 pr-0 text-right">
+                            <button type="button" class="addPartListItem common-orange-button px-4" onclick="orderEntry.addToBucket()">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <div class="col-12">
+        <hr class="" />
+    </div>
+    <div class="clearfix"></div>
+    <div class="container-fluid  mt-5 wrapper-pattern-row wrapper-tab-pils ">
+        @{
+            var visibilityDescription = "";
+            var visibilityDocument = "";
+            var visibilityProducts = "";
+            var visibilityArticles = "";
+            var visibilityTabs = "";
+            var visibilityAttributes = "";
+            var visibilityApplications = "";
+
+
+            if (string.IsNullOrEmpty(Model.LongDescription))
+            {
+                visibilityDescription = "display:none !important";
+            }
+            if (Model.ProductDocuments == null)
+            {
+                visibilityDocument = "display:none !important";
+            }
+            if (Model.RelatedProducts == null)
+            {
+                visibilityProducts = "display:none !important";
+            }
+            if (Model.Articles == null)
+            {
+                visibilityArticles = "display:none !important";
+            }
+            if (Model.Tabs == null)
+            {
+                visibilityTabs = "display:none !important";
+            }
+
+            if (Model.ProductApplications == null)
+            {
+                visibilityApplications = "display:none !important";
+            }
+
+            if (Model.ProductAttributes == null)
+            {
+                visibilityAttributes = "display:none !important";
+            }
+
+        }
+        <div class="container px-0 mb-3" id="additionalContentContainer">
+            <div class="justify-content-md-center">
+                <div class="px-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 px-0 mobile-controlled wrapper-tabs-pils-section">
+                        <input id="tab1" type="radio" class="tabs-pils" onclick="loadTabs(this)" prefer="content1" name="tabs" checked style="@visibilityDescription">
+                        <label for="tab1" style="@visibilityDescription">Description</label>
+                        <input id="tab5" class="tabs-pils" onclick="loadTabs(this)" prefer="content5" type="radio" name="tabs" style="@visibilityAttributes">
+                        <label for="tab5" style="@visibilityAttributes">Attributes</label>
+                        <input id="tab2" class="tabs-pils" onclick="loadTabs(this)" prefer="content2" type="radio" name="tabs" style="@visibilityDocument">
+                        <label for="tab2" style="@visibilityDocument">Documents</label>
+                        <input id="tab3" class="tabs-pils" onclick="loadTabs(this)" prefer="content3" type="radio" name="tabs" style="@visibilityProducts">
+                        <label for="tab3" style="@visibilityProducts">Related</label>
+                        <input id="tab4" class="tabs-pils" onclick="loadTabs(this)" prefer="content4" type="radio" name="tabs" style="@visibilityApplications">
+                        <label for="tab4" style="@visibilityApplications">Vehicles</label>
+                        <input id="tab6" class="tabs-pils" onclick="loadTabs(this)" prefer="content6" type="radio" name="tabs" style="@visibilityArticles">
+                        <label for="tab6" style="@visibilityArticles">Support</label>
+
+
+                        @if (Model.Tabs != null)
+                        {
+                            @await Html.PartialAsync("ProductTab", Model.Tabs)
+                        }
+
+                        <section id="content1" class="tabs-content-wrapper" style="@visibilityDescription">
+                            <div class="col-lg-12 col-md-12">
+                                @Html.Raw(Model.LongDescription)
+                            </div>
+                        </section>
+                        <section id="content5" class="products tabs-content-wrapper " style="@visibilityAttributes">
+                            <div class="col-lg-12 pl-0 pr-0">
+                                <div class="table-responsive table-mobile">
+                                    <table class="table table-bordred table-striped">
+                                        @*<thead>
+                                            <tr>
+                                                <th scope="col" class="text-align-center col_img_th"></th>
+                                                <th scope="col" class="col_0">Image</th>
+                                                <th scope="col" class="col_1">Attribute</th>
+                                                <th scope="col" class="col_1">Type</th>
+                                                <th scope="col" class="col_1">Value(s)</th>
+                                            </tr>
+                                        </thead>*@
+                                        <tbody>
+                                            @if (Model.ProductAttributes != null)
+                                            {
+                                                foreach (var item in Model.ProductAttributes)
+                                                {
+                                                    <tr>
+                                                        @if(!string.IsNullOrEmpty(item.attributeDefaultImage))
+                                                        {
+                                                            <td><img src="@item.attributeDefaultImage"></td>
+                                                        }
+                                                        
+                                                        <td data-label="Attribute : &nbsp;">@item.attributeName</td>
+                                                        @*<td data-label="Type : &nbsp;">@item.attributeType</td>*@
+                                                        <td data-label="Value : &nbsp;">@item.attributeValue</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content2" class="tabs-content-wrapper product-document" style="@visibilityDocument">
+                            <div class="col-lg-12 pl-0 pr-0">
+                                <div class="table-responsive table-mobile">
+                                    <table class="table table-bordred table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="col_0">Label</th>
+                                                <th scope="col" class="col_1">Document</th>
+                                                <th scope="col" class="col_2">Size</th>
+                                                <th scope="col" class="col_3">Type</th>
+                                                <th class="col grid-button-wrapper-header"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.ProductDocuments != null)
+                                            {
+                                                foreach (var item in Model.ProductDocuments)
+                                                {
+                                                    <tr>
+                                                        <td data-label="Label : &nbsp;">@item.Label</td>
+                                                        <td data-label="Document : &nbsp;">@item.DocumentName</td>
+                                                        <td data-label="Size : &nbsp;">@item.Bytes KB </td>
+                                                        <td data-label="Type : &nbsp;">@item.Type</td>
+                                                        <td class="text-align-center tbl-button-wrapper "><a class="grid-button" target="_blank" href="@item.Location">Download</a></td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content3" class="products tabs-content-wrapper" style="@visibilityProducts">
+                            <div class="col-lg-12 pl-0 pr-0">
+                                <div class="table-responsive table-mobile">
+                                    <table class="table table-bordred table-striped">
+                                        <thead>
+                                            <tr>
+                                                @*<th scope="col" class="text-align-center col_img_th"></th>*@
+                                                <th scope="col" class="col_0">Product Code</th>
+                                                <th scope="col" class="col_1">Product</th>
+                                                <th scope="col" class="col_0">Type</th>
+                                                <th scope="col" class="col_1">Discount Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.RelatedProducts != null)
+                                            {
+                                                foreach (var item in Model.RelatedProducts)
+                                                {
+                                                    <tr>
+                                                        @*<td class="text-align-center tble-tr-image"><a href="javascript: return void(0);"><img src="@item.Image" onclick="jumpProductView(@item.RelatedProductId,true,true,'@item.ProductName')" /></a></td>*@
+                                                        <td data-label="Product Code : &nbsp;">@item.RelatedProductCode</td>
+                                                        <td data-label="Product : &nbsp;">@item.RelatedProductName</td>
+                                                        <td data-label="Type : &nbsp;">@item.TypeName</td>
+                                                        <td data-label="Discount Amount : &nbsp;"></td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content4" class="tabs-content-wrapper" style="@visibilityApplications">
+                            <div class="col-lg-12 col-md-12 pl-0 pr-0">
+                                <div class="table-responsive table-mobile">
+                                    <table class="table table-bordred table-striped wrapper-tbl-issue-finder">
+                                        <thead>
+                                            <tr>
+                                                @*<th scope="col" class="text-align-center col_img_th"></th>*@
+                                                <th scope="col" class="col_0 w-25pc">Application</th>
+                                                @*<th scope="col" class="col_1 text-center">Fitmants</th>*@
+                                                <th scope="col" class="col_1 w-15pc">Make</th>
+                                                <th scope="col" class="col_1 w-15pc">Model</th>
+                                                <th scope="col" class="col_1 w-15pc">Year</th>
+                                                <th scope="col" class="col_1">Description</th>
+                                                <th class="th_2 w-25pc"></th>
+                                                @*<th scope="col" class="text-align-right button-wrapper-header"></th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.ProductApplications != null)
+                                            {
+
+                                                foreach (var item in Model.ProductApplications)
+                                                {
+
+                                                    <tr>
+                                                        <td>@item.ApplicationName</td>
+                                                        @*<td class="col text-center grid-button-wrapper">
+                                                                <span onclick="getApplicationFitments(@Model.ProductId, @item.ApplicationId, '@item.ApplicationName')" title="Application Fitments"><i class="fa fa-clone color-orange"></i></span>
+                                                            </td>*@
+                                                        <td>@item.Make</td>
+                                                        <td>@item.Model</td>
+                                                        <td>@item.Year</td>
+                                                        <td>@item.ProductApplicationDescription</td>
+                                                        <td class="col text-center grid-button-wrapper">
+                                                            <span onclick="getApplicationFitments(@Model.ProductId, @item.ApplicationId, '@item.ApplicationName')" class="common-orange-button px-4"><i class="fas fa-info-circle"></i> More Info</span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="content6" class="tabs-content-wrapper" style="@visibilityArticles">
+                            <div class="col-lg-12 col-md-12 pl-0 pr-0">
+                                <div class="table-responsive table-mobile">
+                                    <table class="table table-bordred table-striped wrapper-tbl-issue-finder">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-align-center col_img_th"></th>
+                                                <th scope="col" class="col_0">Name</th>
+                                                <th scope="col" class="col_1">Reference Number</th>
+                                                <th scope="col" class="col_1">Type</th>
+                                                <th scope="col" class="col_1">Status</th>
+                                                <th scope="col" class="text-align-right button-wrapper-header"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Articles != null)
+                                            {
+
+                                                foreach (var item in Model.Articles)
+                                                {
+
+                                                    <tr>
+                                                        <td class="text-align-center tble-tr-image" data-label="Label : &nbsp;">
+                                                            @if (!string.IsNullOrEmpty(item.imageThumb))
+                                                            {
+                                                                <img src="@item.imageThumb" />
+                                                            }
+                                                        </td>
+                                                        <td data-label="Name : &nbsp;">@item.serviceArticleName</td>
+                                                        <td data-label="Reference Number : &nbsp;">@item.ReferenceNumber</td>
+                                                        <td data-label="Type : &nbsp;">@item.type</td>
+                                                        <td data-label="Status : &nbsp;">@item.Status</td>
+                                                        @*<td data-label="Title (issue) : &nbsp;">@item.issue <br />@item.type</td>
+                                                            <td data-label="">@item.description</td>*@
+                                                        <td><div class="text-align-right text-primary cursor-pointer pr-2"><button class="grid-button" onclick="loadArticleWindow('@item.issue','This is where content goes to help the user install the product.')">View</button></div></td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")
+
+@section Scripts
+{
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/js/content.js"></script>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            reloadProductDiagramImageWithHotsPot($("#hdnProductId").val(), $("#hdnProductTypeId").val(), $("#hdnProductImageFull").val());
+        });
+
+        //$(document).ready(function () {
+        //    var imgWidth = $('.zoom-img').width();
+        //    var imgHeight = $('.zoom-img').height();
+
+        //    if ($(window).width() < 992) {
+        //        var zoomtype = 'lens';
+        //    } else {
+        //        var zoomtype = 'window';
+        //    }
+
+        //    $("#zoom_03").ezPlus({
+        //        gallery: 'gallery_01',
+        //        cursor: 'pointer',
+        //        galleryActiveClass: "active",
+        //        imageCrossfade: true,
+        //        scrollZoom: true,
+        //        borderColour: '#eee',
+        //        zoomWindowOffsetX: 23,
+        //        zoomWindowOffsetY: -2,
+        //        zoomWindowHeight: imgHeight,
+        //        zoomWindowWidth: imgWidth,
+        //        responsive: true,
+        //        zoomType: zoomtype,
+        //        lensSize: 200
+        //    });
+
+        //});
+
+    </script>
+
+
+    <script>
+        //$("input[type='number']").inputSpinner();
+        $(".buttons-only").inputSpinner({ buttonsOnly: true });
+    </script>
+
+}
+
+
+

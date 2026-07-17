@@ -1,0 +1,100 @@
+﻿@model List<PHXCOM.PlatformSDK.Models.Application>
+@{
+    string previusMake = "";
+    string previusYear = "";
+    string previusModel = "";
+    List<PHXCOM.PlatformSDK.Models.Application> modelList = null;
+    List<PHXCOM.PlatformSDK.Models.Application> yearList = null;
+    string redirect = "";
+    int counter = 0;
+    int counter2 = 0;
+}
+<div class="bg-light-greay" id="mainDiv">
+    <div class="container  wrapper-application-guide py-3">
+        <div class="w-100 d-inline-block text-center wrapper-btn-sec mb-4 mt-4">
+            @foreach (PHXCOM.PlatformSDK.Models.Application app in Model)
+            {
+                @if (previusMake != app.Make)
+                {
+                    previusMake = app.Make;
+                    <div class="d-inline-block  mr-3">
+                        <a class="btn btn-primary px-4 rounded-0" href="#section_@counter">@app.Make <i class="fas fa-arrow-alt-circle-down ml-3 float-right mt-1"></i></a>
+                    </div>
+                    counter++;
+                }
+            }
+
+        </div>
+
+
+        @foreach (PHXCOM.PlatformSDK.Models.Application app in Model)
+        {
+            string imagePath = "";
+            // counter = 0;
+
+            <div class="col-12 d-inline-block float-left">
+                @if (previusMake != app.Make)
+                {
+                    <section id="section_@counter2" class="mb-4 d-inline-block w-100">
+                        @{
+                            previusMake = app.Make;
+                            counter2++;
+                            <div class="main-header my-2"><strong>@app.Make</strong></div>
+                            <hr class="mb-4 mt-0 w-100 d-inline-block" />
+                            modelList = Model.Where(a => a.Make == app.Make).ToList();
+                            foreach (PHXCOM.PlatformSDK.Models.Application mdl in modelList)
+                            {
+                                if (previusModel != mdl.Model)
+                                {
+                                    <div class="col-md-6 col-12 d-inline-block float-left mb-0  d-inline-block py-2 rounded-0 px-2 ">
+                                        <div class="rounded bg-white shadow d-inline-block w-100">
+                                            <div class="col-6 d-inline-flex float-left  align-content-center min-height-175">
+                                                @if (!string.IsNullOrEmpty(app.ApplicationImage))
+                                                {
+                                                    imagePath = app.ApplicationImage;
+                                                }
+                                                else
+                                                {
+                                                    imagePath = "/images/no-image-car.jpg";
+                                                }
+                                                <img src="@imagePath" class=" p-3  w-75">
+                                            </div>
+                                            <div class="col-6 d-inline-flex flex-column float-left justify-content-center min-height-175">
+
+                                                @{
+                                                    previusModel = mdl.Model;
+
+                                                    <div><label class="modal-name">@mdl.Model</label></div>
+                                                    yearList = modelList.Where(a => a.Model == mdl.Model).ToList();
+
+                                                    foreach (PHXCOM.PlatformSDK.Models.Application year in yearList)
+                                                    {
+                                                        redirect = string.Format("../{2}-{0}-{1}", app.Make, mdl.Model, year.Year).Replace(" ", "-");
+                                                        <div onclick="redirectFromAll('@app.Make', '@mdl.Model', '@year.Year', '@app.ApplicationId', '@redirect')"> <a class="year">@year.Year</a></div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                            }
+                        }
+                    </section>
+
+                }
+            </div>
+            <div class="clearfix"></div>
+
+        }
+        <a class="btn btn-primary px-4  back-to-top float-right" href="#navFixed"><i class="fas fa-arrow-alt-circle-up float-left mr-2 mt-1"></i> Back to Top</a>
+    </div>
+</div>
+@section pageSTyles{
+    <style type="text/css">
+        .nav-fixed main {
+            padding-top: 220px;
+        }
+    </style>
+
+}

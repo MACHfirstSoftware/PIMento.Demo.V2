@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row wrapper-catelog mb-3 col-xl-5 col-lg-6 col-md-8 col-12  justify-content-center mx-auto">
+    <div class="col-12 mt-4 py-3">
+        <h1 class="page-header text-center">Login</h1>
+    </div>
+    <div class="col-12 mt-md-1 mt-4">
+        <div class="row">
+            <form id="frmUserLogin" class="col-12">
+                <div class="col-12 float-left  form-group">
+                    <label>User Name</label>
+                    <input type="text" required id="txtUserName" name="txtUserName" placeholder="User Name" class="form-control" />
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-12 float-left form-group">
+                    <label>Password</label>
+                    <input type="Password" required id="txtPassword" name="txtPassword" placeholder="Password" class="form-control" />
+                </div>
+
+            </form>
+            <div class="col-12 text-center form-group">
+                <a class="common-link" asp-controller="Account" asp-action="ForgetPassword">Forgot Password?</a>
+            </div>
+            <div class="col-10 text-md-left text-center mx-auto">
+
+                <button type="button" class="btn btn-primary common-button w-100 enterHandler bg-color-black" onclick="account.login()">Login</button>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="col-12 text-center form-group mt-3">
+                <a class="common-link" asp-controller="Account" asp-action="Create">Create an Account</a>
+            </div>
+        </div>
+    </div>
+    <div style="display:none" id="divContinueGuest" class="w-100">
+        <div class="col-12 mt-5 py-2 text-center">
+            <h1 class="section-title text-center">Continue as a Guest</h1>
+        </div>
+        <div class="col-12 mt-md-0 mt-2">
+            <div class="row">
+                <div class="col-10 text-md-left text-center mx-auto">
+                    <button type="button" class="btn btn-primary common-button w-100  bg-color-org" onclick="account.continueGuest()">Continue</button>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")*@
+
+@section scripts{
+    <script>
+        account.showContinueGuestButton();
+    </script>
+    
+    @*<script type="text/javascript">
+        $(document).ready(function () {
+            setCookieValuesToAppProp();
+        });
+    </script>*@
+}
+

@@ -1,0 +1,94 @@
+﻿@model PHXCOM.PlatformSDK.Models.CurrentOrder
+
+@{
+    Layout = null;
+
+    // string shippingLabel = "Next Step";
+    decimal shippingLabel = 0;
+    if (Model.ShippingMethod > 0)
+    {
+        shippingLabel = Model.ShippingCost;
+    }
+
+    //string taxLabel = "Next Step";
+    decimal taxLabel = 0;
+
+    bool isCart = Model.AllowCartItemChanges;
+
+    bool onlyTotal = ViewBag.OnlyTotal != null ? ViewBag.OnlyTotal : false;
+
+    if (isCart)
+    {
+        onlyTotal = true;
+    }
+
+}
+<div class="cart-summary col-12 px-0">
+    @if (!onlyTotal)
+    {
+        <div class="col-12 px-0">
+            <div class="row px-3">
+                <label class="col col-md-8 text-left pl-0">Sub Total</label>
+                <label class="col-6 col-md-4 text-right pr-0">@Model.SubTotal.ToString("C")</label>
+            </div>
+        </div>
+        <div class="col-12 px-0">
+            <div class="row px-3">
+                <label class="col col-md-8 text-left pl-0">Shipping</label>
+
+                <label class="col-6 col-md-4 text-right pr-0">@shippingLabel.ToString("C")</label>
+            </div>
+        </div>
+        @if (Model.CouponDiscount > 0)
+        {
+            <div class="col-12 px-0">
+                <div class="row px-3">
+                    <label class="col col-md-8 text-left pl-0">Discount</label>
+                    <label class="col-6 col-md-4 text-right pr-0">@Model.CouponDiscount.ToString("C")</label>
+                </div>
+            </div>
+        }
+        <div class="col-12 px-0">
+            <div class="row px-3">
+                <label class="col-6 col-md-8 text-left pl-0">Tax</label>
+
+                @*@if (Model.Tax > 0)
+                    {
+                        taxLabel = Model.Tax.ToString("C");
+                    }*@
+                @{
+                    taxLabel = Model.Tax;
+                }
+                <label class="col-6 col-md-4 text-right pr-0">@taxLabel.ToString("C")</label>
+            </div>
+        </div>
+    }
+    <div class="col-12 px-0">
+        <div class="order-total py-1 d-inline-block w-100">
+            @if (Model.CurrentOrderStep == 1 || Model.CurrentOrderStep == 2)
+            {
+                <label class="col-6 col-md-8 text-left pl-0 float-left">Order SubTotal</label>
+                <label class="col-6 col-md-4 text-right pr-2 float-left">@Model.SubTotal.ToString("C")</label>
+            }
+            else
+            {
+                <label class="col-6 col-md-8 text-left pl-0 float-left">Order Total</label>
+                <label class="col-6 col-md-4 text-right pr-2 float-left">@Model.Total.ToString("C")</label>
+            }
+        </div>
+        @if (onlyTotal || isCart)
+        {
+            <div class="col-12 text-center w-100 px-0">
+                <label class="small">Shipping and tax (if any) calculated during checkout</label>
+            </div>
+
+        }
+
+        @if (Model.CurrentOrderStep == 2)
+        {
+            <button type="button" class="btn btn-green rounded-0 px-2 font-18 w-100 mt-4" onclick="orderEntry.setShippingInfo()">Next > Shipping & Payment</button>
+        }
+
+    </div>
+
+</div>

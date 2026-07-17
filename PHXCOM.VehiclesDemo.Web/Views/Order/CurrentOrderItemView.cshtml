@@ -1,0 +1,230 @@
+﻿@model PHXCOM.PlatformSDK.Models.CurrentOrder
+@{
+
+    Layout = null;
+    bool shortCart = ViewBag.ShortCart != null ? ViewBag.ShortCart : false;
+
+    //Model.AllowCartItemChanges = shortCart;
+}
+
+@if (!shortCart)
+{
+    <div class="row wrapper-cart-summary">
+        <div class="col-12 px-md-3 px-xl-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordred table-striped mt-3" id="tbProductItem">
+                            <thead>
+                                <tr class="mobile-tr">
+                                    @if (Model.AllowCartItemChanges)
+                                    {
+                                        <th scope="col" class="col_0 "></th>
+                                    }
+                                    <th scope="col" class="col_1 w-60">Product</th>
+                                    <th scope="col" class="col_4">Item Number</th>
+                                    <th scope="col" class="col_4 text-center quantity">Quantity</th>
+                                    @*<th scope="col" class="col_3 text-right d-none">Price</th>*@
+                                    <th scope="col" class="col_4 text-right ">Price</th>
+                                    <th scope="col" class="col_4 text-right ">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.OrderItems != null)
+                                {
+
+                                    foreach (var item in Model.OrderItems)
+                                    {
+                                        <tr id="itemRaw_@item.ItemId">
+                                            @if (Model.AllowCartItemChanges)
+                                            {
+                                                <td class="text-center close-icon"> <span title="Remove item from cart" onclick="orderEntry.removeItem(@item.ItemId)" class="remove-item"><i class="fa fa-trash-alt"></i></span> </td>
+                                            }
+                                            <td data-label="" class="col-img">
+                                                <div class="d-inline-block float-left">
+                                                    <div class="float-left wrapper-tbl-img ml-md-1 mr-1 mr-md-0 mb-1">
+                                                        @if (!string.IsNullOrEmpty(item.ItemImage))
+                                                        {
+                                                            <img src="@item.ItemImage" class="" style="max-width:60px; max-height:60px;" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="@item.ProductImage" class="" style="max-width:60px; max-height:60px;" />
+                                                        }
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="float-left pl-4 w-75 ">
+                                                    <h6>@item.ProductName</h6>
+                                                    <div class="clearfix"></div>
+                                                    <span>@item.ItemDescription</span>
+
+                                                    @if (item.SelectedModifiers != null)
+                                                    {
+                                                        <br />
+                                                        foreach (var mod in item.SelectedModifiers)
+                                                        {
+                                                            <span>@mod.ModifierName : @mod.OptionName</span> <br />
+                                                        }
+                                                    }
+
+                                                    @if (ViewBag.OrderFinish != null && item.Product.Status == "Published")
+                                                    {
+                                                        <br />
+                                                        <a href="/products/@item.Product.Slug">Reorder</a>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td class="pt-2 text-right text-md-left" data-label="Item Number : &nbsp;">@item.ItemNumber</td>
+                                            <td class="pt-2 quantity text-right text-md-center" data-label="Quantity : &nbsp;">
+                                                @if (Model.AllowCartItemChanges)
+                                                {
+                                                    <div class="input-group quantity-selector float-left">
+                                                        <div class="input-group-prepend">
+                                                            <button style="min-width: 2.5rem" class="btn btn-outline-secondary btn-minus" onclick="decrement(@item.ItemId, @item.LineUnitPrice,false)" type="button"><strong>−</strong></button>
+                                                        </div>
+
+                                                        <input type="text" class="w-50 qty-collector px-2 text-center float-left" id="qty_@item.ItemId" skuId="@item.ItemId" value="@item.LineQty" min="1" max="@item.MaxQuantity" />
+
+                                                        <div class="input-group-append">
+                                                            <button style="min-width: 2.5rem" class="btn btn-outline-secondary btn-plus" onclick="increment(@item.ItemId, @item.LineUnitPrice,false)" type="button"><strong>+</strong></button>
+                                                        </div>
+                                                        @* <input type="number" class="buttons-only qty-collector px-2 text-center float-left" id="qty_@item.ItemId" skuId="@item.ItemId" value="@item.LineQty" min="1" max="@item.MaxQuantity" style="display: none;" />*@
+
+                                                    </div>
+
+                                                    @*<div class="text-right quantity-new-update">
+
+
+                                                            <input type="number" class="buttons-only qty-collector px-2 text-center float-left" id="qty_@item.ItemId" skuId="@item.ItemId" value="@item.LineQty" min="1" max="@item.MaxQuantity" style="display: none;" />
+
+                                                            <div class="mt-2 mt-md-1 d-inline-block w-100 w-sm-100 ">
+                                                                <button onclick="orderEntry.changeItemQty(@item.ItemId,@item.LineUnitPrice)" class="btn btn-danger rounded-0 px-4 font-18 qty-update">Update</button>
+                                                            </div>
+                                                        </div>*@
+
+
+                                                }
+                                                else
+                                                {
+                                                    @item.LineQty
+
+                                                }
+                                            </td>
+                                            @*<td data-label="Price : &nbsp;" class="text-right" currentPrice="@item.LineUnitPrice">@item.LineUnitPrice.ToString("C") </td>*@
+                                            <td data-label="Price : &nbsp;" class="text-right pr-0 pr-xl-2 pt-2 pr-2">  @((item.LineUnitPrice).Value.ToString("C"))/ea. </td>
+                                            <td data-label="Total : &nbsp;" class="text-right pr-0 pr-xl-2 pt-2 pr-2" id="itemTotal_@item.ItemId">  @((item.LineTotal).Value.ToString("C")) </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>}
+else
+{
+    <div class="row wrapper-cart-summary customer-info">
+        <div class="col-12 mt-lg-0 pt-lg-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordred table-striped" id="tbProductItem">
+                            <thead>
+                                <tr class="d-none">
+                                    <th scope="col" class="col_1 ">Product</th>
+                                    @*<th scope="col" class="col_4">Item Number</th>*@
+                                    <th scope="col" class="col_4 text-center ">Quantity</th>
+                                    <th scope="col" class="col_3 text-right d-none">Price</th>
+                                    @*<th scope="col" class="col_4 text-right "></th>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.OrderItems != null)
+                                {
+
+                                    foreach (var item in Model.OrderItems)
+                                    {
+                                        <tr id="itemRaw_@item.ItemId">
+                                            <td data-label="" class="col-img col_1 d-lg-table-cell">
+                                                <div class="d-inline-block float-left w-25">
+                                                    <div class="float-left wrapper-tbl-img mr-1 mr-md-0">
+                                                        @*<img src="@item.ProductImage" class="" style="max-width:60px; max-height:60px;" />*@
+                                                        @if (!string.IsNullOrEmpty(item.ItemImage))
+                                                        {
+                                                            <img src="@item.ItemImage" class="" style="max-width:60px; max-height:60px;" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="@item.ProductImage" class="" style="max-width:60px; max-height:60px;" />
+                                                        }
+                                                        <span class="wrapper-cart-count-no">@item.LineQty</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="float-left pl-4 w-75 ">
+                                                    <h6>@item.ProductName</h6>
+                                                    <div class="clearfix"></div>
+                                                    <span>@item.ItemDescription</span>
+                                                    @if (item.SelectedModifiers != null)
+                                                    {
+                                                        <br />
+                                                        foreach (var mod in item.SelectedModifiers)
+                                                        {
+                                                            <span>@mod.ModifierName : @mod.OptionName</span> <br />
+                                                        }
+                                                    }
+                                                </div>
+                                            </td>
+                                            @*<td data-label="Item Number : &nbsp;" class="col_4 d-lg-table-cell">@item.ItemNumber</td>*@
+                                            @*<td data-label="Quantity : &nbsp;" class="text-center">
+                                                    @item.LineQty
+                                                </td>*@
+                                            @*<td data-label="Price : &nbsp;" class="text-right" currentPrice="@item.LineUnitPrice">@item.LineUnitPrice.ToString("C") </td>*@
+                                            <td data-label="Total : &nbsp;" class="text-right pr-3 pr-xl-3  d-lg-table-cell" id="itemTotal_@item.ItemId">  @((item.LineTotal).Value.ToString("C"))</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+        //$(document).ready(function () {
+        //    setCookieValuesToAppProp();
+        //});
+    </script>
+
+    <script>
+        //$("input[type='number']").inputSpinner();
+        $(".buttons-only").inputSpinner({ buttonsOnly: true });
+    </script>
+}
+
+
+<script>
+
+    function decrement(id, price, isFromSlidingCart) {
+        var quantity = parseInt($('#qty_' + id + '').val());
+        if (quantity > 0) {
+            $('#qty_' + id + '').val(quantity - 1);
+        }
+        orderEntry.changeItemQty(id, price, isFromSlidingCart);
+    }
+
+    function increment(id, price, isFromSlidingCart) {
+        var quantity = parseInt($('#qty_' + id + '').val());
+        $('#qty_' + id + '').val(quantity + 1);
+        orderEntry.changeItemQty(id, price, isFromSlidingCart);
+    }
+</script>

@@ -1,0 +1,296 @@
+﻿@model PHXCOM.PlatformSDK.Models.CurrentOrder
+@{
+    ViewData["Title"] = "Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Model.AllowCartItemChanges = false;
+    if (Model.ShippingInfo == null)
+    {
+        Model.ShippingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
+    }
+
+    var shippingRules = ViewBag.ShippingMethods as List<PHXCOM.PlatformSDK.Models.ShippingRule>;
+    int hasShipping = 1;
+    string shippingRuleStyle = string.Empty;
+
+    if (Model.ShippingMethod == 0)
+    {
+        if (shippingRules != null && shippingRules.Count > 0)
+        {
+            hasShipping = 0;
+            Model.ShippingMethod = shippingRules.OrderBy(x => x.Cost).First().ShippingRuleId;
+        }
+        else
+        {
+            hasShipping = 1;
+            shippingRuleStyle = "display:none;";
+            Model.ShippingMethod = 1;
+        }
+    }
+
+    var acceptCards = ViewBag.CardTypes as List<PHXCOM.PlatformSDK.Models.CreditCard>;
+    var cardTypes = new Dictionary<string, string>() { { "Discover", "/images/discover.png" }, { "American Express", "/images/amex.png" }, { "MasterCard", "/images/master.png" }, { "VISA", "/images/visa.png" } };
+
+}
+
+@if (Model.OrderItems != null && Model.OrderItems.Count > 0)
+{
+
+    <div class="breadcrumbs set-center d-inline-block text-left col-12 mb-0 form-group">
+        @await Html.PartialAsync("CartBreadCrum", 2)
+    </div>
+    <div class="container">
+
+        <div class="row wrapper-cart-shipping-info px-3">
+            <div class="col-lg-7 col-12">
+
+                <div class="col-12 px-0">
+                    <div class="logo-img col-12 mt-3 pl-0 form-group mb-0">
+                        @if (Model.CompanyLogo != "" && Model.CompanyLogo != null)
+                        {
+                            <a href="/index"> <img src="@Model.CompanyLogo" width="300" /></a>
+                        }
+                        else
+                        {
+                    <a href="/index">
+                        @*<label class="company-name">@Model.CompanyName</label>*@
+                        <h3 class="shipping-header section-title">Shipping and Payment</h3>
+                    </a>
+                        }
+                    </div>
+
+
+                </div>
+
+                @await Html.PartialAsync("QuickEditInfo", Model)
+                <div class="row form-group mt-3">
+                    <div class="col-12">
+                        <div class="form-group col-12 mb-0">
+                            <h5 class="section-title">Shipping Method</h5>
+                            <form id="frmShippingRule">
+                                @if (shippingRules != null)
+                                {
+                                    @if (shippingRules.Count() == 1)
+                                    {
+                                        <label>@shippingRules.First().ShippingRuleName | @(shippingRules.First().Cost.ToString("C"))</label>
+                                        shippingRuleStyle = "display:none;";
+                                    }
+                                    <select style="@shippingRuleStyle" required id="ddlShippingMethod" class="form-control" onchange="orderEntry.setShippingMethod()">
+                                        @*<option value="" cost="0">--Select--</option>*@
+                                        @if (shippingRules != null)
+                                        {
+                                            foreach (var item in shippingRules)
+                                            {
+                                                if (item.ShippingRuleId == Model.ShippingMethod)
+                                                {
+                                                    <option selected value="@item.ShippingRuleId" name="@item.ShippingRuleName" cost="@item.Cost">@item.ShippingRuleName | @(item.Cost.ToString("C")) </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.ShippingRuleId" name="@item.ShippingRuleName" cost="@item.Cost">@item.ShippingRuleName | @(item.Cost.ToString("C"))</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                }
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <h5 class="section-title px-3 mt-3">Billing Address</h5>
+                <div class="form-group col-12 mb-1">
+                    <label>Select the address that matches your card or payment method</label>
+                </div>
+                <div class="row form-group mb-0 mt-2">
+                    <div class="col-12">
+                        <div class="col-12">
+                            <div class="bg-color-grey w-100 pl-2 pt-2 d-inline-block">
+                                <div class="wrapper-rdo pl-3 ml-2 float-md-left w-100">
+                                    <input type="radio" id="rdobillingAddress" value="0" class="shippingOptionAdrz" checked name="rdShippingAddreesOpt" />
+                                    <label class="styled-radio"></label>
+                                    <label for="rdobillingAddress" class="w-100 cursor-pointer">Same as Shipping Address</label>
+                                </div>
+                            </div>
+                            <div class="bg-color-grey w-100 pl-2 pt-2 d-inline-block">
+                                <div class="wrapper-rdo pl-3 ml-2  float-md-left w-100">
+                                    <input type="radio" value="1" id="rdoShippingAddress" class="shippingOptionAdrz" name="rdShippingAddreesOpt" />
+                                    <label class="styled-radio"></label>
+                                    <label for="rdoShippingAddress" class="w-100 cursor-pointer">Use a different Billing Address</label>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+                    <div class="row form-group mb-0" id="orderShippingAddrees" style="display:none">
+                        <div class="col-12">
+
+                            @await Html.PartialAsync("Address", Model.ShippingInfo)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 px-0 mt-4">
+                    <h5 class="section-title px-3">Payment Method</h5>
+                    <div class="col-12">
+
+                        <div class="bg-color-grey w-100 pl-2 pt-2 d-inline-block form-group mt-2">
+
+                            <label class="float-left d-inline-block ml-2">Credit Card</label>
+                            @*<img src="~/images/credit-cards.png" class="float-right d-inline-block mr-2 pt-1" />*@
+                            <div class="float-right">
+                                @foreach (var card in acceptCards)
+                                {
+                                    var obj = cardTypes.FirstOrDefault(x => x.Key.ToLower() == card.Name.ToLower());
+                                    @if (obj.Key != null)
+                                    {
+                                        <img src="@obj.Value" class="float-left d-inline-block mr-2 pt-1" />
+
+                                    }
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="row form-group">
+                        <div class="col-12">
+                            <div class="col-12">
+                                @await Html.PartialAsync("Payment")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-12  mt-3 mt-payment-sectionmd-0  pb-2">
+                <div id="" class="text-right row float-right col-12  mx-auto">
+                    <div id="cartItemContainer">
+                        @await Html.PartialAsync("CurrentOrderItemView", Model)
+                    </div>
+                    <div id="curentOrderInfo" class="d-inline-block w-100">
+                        @await Html.PartialAsync("CurrentOrderInfo", Model)
+                    </div>
+                </div>
+                <div class="d-inline-block w-100 form-group mt-4">
+                    <div class="col-8 float-left d-inline-block">
+                        <input type="text" class="form-control" id="couponCode" placeholder="Coupon Code" />
+                        <label class="text-danger mt-1" id="lblCouponError">&nbsp;</label>
+                    </div>
+                    <div class="col-4 float-left d-inline-block text-right">
+                        <button type="button" class="btn common-button py-1 px-3" onclick="cartEntry.couponSubmit($('#couponCode'))">Redeem</button>
+                    </div>
+
+
+                </div>
+                <div class="col-12  d-inline-block form-group">
+
+                    @if (!Model.HasLogin)
+                    {
+                        <h5 class="inner-sub-header-bold pl-md-3">Express Checkout</h5>
+                        <div class="col-12 wrapper-checkbox ml-md-3 pl-4 mt-2">
+                            <input onclick="orderEntry.visiblePassword(this)" type="checkbox" id="chkExpressCheckout" />
+                            <label class="styled-checkmark"></label>
+                            @*<label for="chkExpressCheckout" class="ml-2 pr-2">Create a password to access order history and update account settings</label>*@
+                            <label for="chkExpressCheckout" class="ml-2 pr-2">Save my info for next time.</label>
+                            <div class="form-group col-12 mt-4 mt-md-2 pr-4" id="passwordContainer" style="display:none">
+                                <div class="row">
+                                    <div class="row">
+                                        <form id="frmPassword">
+                                            <div class="row">
+                                                <div class="col-12 float-left mb-3 ">
+                                                    <input type="password" required id="txtPsswrd" name="txtPsswrd" placeholder="Create a Password" class="form-control">
+                                                </div>
+                                                <div class="col-12 float-left mb-0 ">
+                                                    <input type="password" required id="txtPsswrdCnfrm" name="txtPsswrdCnfrm" placeholder="Confirm Password" class="form-control">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+
+
+
+                </div>
+
+                <div class="col-12 d-inline-block w-100 mt-2">
+                    <div class="">
+                        <button id="btnOrderSubmit" onclick="orderEntry.submitOrder()" class="btn common-orange-button rounded-0 w-100"> Submit Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:none">
+
+            <form id="frmPaymentSubmit" runat="server" action="@ViewBag.PaymentFormAction">
+
+                <table>
+                    <tr><td>Credit Card Number  </td><td><input ID="cc_number" name="cc_number" value="4111111111111111" /></td></tr>
+                    <tr><td>Expiration Date</td><td><input ID="cc_exp" name="cc_exp" value="1012" /> </td></tr>
+                    <tr><td>CVV </td><td><input ID="cvv" name="cvv" /></td></tr>
+                    <tr><td colspan="2">&nbsp;</td></tr>
+                    <tr>
+                        <td colspan="2" align="center">
+                            <input type="submit" />
+
+                            @*<asp:Button runat="server" Text="Submit Step Two"
+                                ID="submitStepTwo"></asp:Button>*@
+                        </td>
+                    </tr>
+                </table>
+
+            </form>
+        </div>
+
+    </div>
+    @await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")
+
+    @section scripts {
+
+
+        @if (!string.IsNullOrEmpty(Model.ShippingInfo.CountryCode))
+        {
+            <script>
+                 generalHandlers.getStatesByCountry('@(Model.ShippingInfo.CountryCode)','@Model.ShippingInfo.StateAbbr');
+            </script>
+        }
+
+<script>
+    if (@ViewBag.PaymentStatus == 1) {
+        generalHandlers.loadSimpleMessage(0, "<p class='mb-0'>Invalid Credit Card Details.</p>", null, null, 2500);
+        $('html, body').animate({
+            scrollTop: $("#divCreditcards").offset().top
+        }, 500);
+
+    }
+    else if (@ViewBag.PaymentStatus == 2) {
+        generalHandlers.loadSimpleMessage(0, "<p class='mb-0'>Something went wrong when trying to finalizing the order. Please try again</p>", null, null, 2500);
+        //$('html, body').animate({
+        //    scrollTop: $("#divCreditcards").offset().top
+        //}, 500);
+    }
+
+    if (@hasShipping== 0)
+    {
+        orderEntry.setShippingMethod();
+    }
+
+
+</script>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                setCookieValuesToAppProp();
+            });
+        </script>
+
+    }
+}
+
+

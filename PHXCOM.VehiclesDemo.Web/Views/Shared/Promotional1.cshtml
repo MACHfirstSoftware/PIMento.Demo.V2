@@ -1,0 +1,239 @@
+﻿@model PHXCOM.PlatformSDK.Models.Product
+
+@{
+    string metaTitle = "";
+    string metaDescription = "";
+    string metakeyWords = "";
+    if (Model.ProductMetaData != null && Model.ProductMetaData.Count > 0 && !string.IsNullOrEmpty(Model.ProductMetaData[0].MetaTitle))
+    {
+        ViewData["Title"] = Model.ProductMetaData[0].MetaTitle;
+        metaTitle = Model.ProductMetaData[0].MetaTitle;
+        metaDescription = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaDescription) ? "" : Model.ProductMetaData[0].MetaDescription;
+        metakeyWords = string.IsNullOrEmpty(Model.ProductMetaData[0].MetaKeywords) ? "" : Model.ProductMetaData[0].MetaKeywords;
+    }
+    else
+    {
+        ViewData["Title"] = Model.ProductName;
+    }
+
+
+    ViewData["Description"] = metaDescription;
+    ViewData["Keywords"] = metakeyWords;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Dictionary<string, string> breadCrumbs = ViewBag.breadCrumbs;
+
+    int modifiersCount = 0;
+    if (Model.Modifiers != null && Model.Modifiers.Count > 0) modifiersCount = Model.Modifiers.Count;
+
+    var availableSizes = Model.Items != null ? Model.Items.Where(x => x.ProductId == Model.ProductId && x.Size != null).OrderBy(x => x.Size).Select(x => x.Size).Distinct().ToList() : null;
+
+}
+
+<input type="hidden" id="hdnProductId" value="@Model.ProductId" />
+<input type="hidden" id="hdnProductName" value="@Model.ProductName" />
+<input type="hidden" id="hdnisProductUniversal" value="@Model.IsUniversal" />
+<input type="hidden" id="hdnModifiersCount" value="@modifiersCount" />
+
+<div id='syndicateHolder'>
+
+    <div class="wrapper-page-full justify-content-md-center">
+        <div class="col-lg-12 col-md-12 col-sm-12 position-relative wrapper-search-description">
+            <div class="">
+                <div class="row wrapper-product pb-4">
+                    <div id="syndicationBreadcrumbContainer" class="breadcrumbs">
+                        @*<div class="container">@await Html.PartialAsync("BreadCrumbView", breadCrumbs)</div>*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="container header-separator-bc mobile-controlled mt-2 px-0">
+                <div class="justify-content-md-center">
+                    <div class="col-lg-12 col-md-12 col-sm-12 pr-0 pl-0 ">
+                        <div class="col-lg-12 col-md-12 col-sm-12 mobile-controlled-padding box-actions ">
+                            <div class="col-lg-6 col-md-12 col-sm-12 pr-0 pl-0 pb-2  float-right item-contentconfig-area" id="productDetailContainer">
+                                <div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 pt-2 pl-md-3 pr-md-3 pl-lg-3 pr-lg-3 pl-xl-3 pr-xl-3">
+                                        <h2 class="wrapper-product-header" style="margin-top:0;">@Model.ProductName</h2>
+                                    </div>
+                                    <div class="wrapper-product-description col-lg-12 col-md-12 col-sm-12 pl-md-3 pr-md-3 pl-lg-3 pr-lg-3 pl-xl-3 pr-xl-3">
+                                        <p class="mb-3 font-14px">@Model.ShortDescription</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12 col-sm-12 float-left images-section pr-0 pl-0 mb-lg-5" id="productImagePreviewContainer">
+                                <div>
+                                    <div class="preview col-lg-12 col-md-12 col-sm-12 pr-0 pl-0 pr-md-3 pl-md-3 pl-xl-3 pr-xl-3 pl-lg-3 pr-lg-3">
+                                        <div class="preview-pic tab-content ">
+                                            <div class="tab-pane active easyzoom easyzoom--adjacent" id="pic-0">
+                                                @*<a href="@Model.ImageFull"><img class="" src="@Model.ImageFull" /></a>*@
+                                                <img class="zoom-img zoom-img-customize" id="zoom_03" src="@Model.ImageFull" data-zoom-image="@Model.ImageFull" />
+                                            </div>
+                                            @{
+                                                var count = 1;
+                                                if (Model.AdditionalImages != null)
+                                                {
+                                                    foreach (var item in Model.AdditionalImages)
+                                                    {
+
+                                                        if (item.videoUrl != null && @item.videoUrl != "")
+                                                        {
+                                                <div class="tab-pane" id="pic_@count">
+                                                    <div class="youtube" data-embed="@item.videoUrl">
+                                                        <div class="play-button"></div>
+                                                    </div>
+                                                    <label>@item.Caption</label>
+                                                </div>
+                                                        }
+                                                        else
+                                                        {
+                                                @*<div class="tab-pane easyzoom easyzoom--adjacent main-picture" id="pic_@count">
+                                                        <a href="@item.Image"><img src="@item.Image" /></a>
+                                                        <div class="clearfix"></div>
+                                                        <label>@item.Caption</label>
+                                                    </div>*@
+
+                                                        }
+                                                        count++;
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                        <div class="wrapper-image-description">
+                                            <h3>Example image(s) do not necessarily reflect exact applications.</h3>
+                                        </div>
+                                        <ul id="gallery_01" class="preview-thumbnail nav nav-tabs">
+                                            @{
+                                                @*<li class="active"><a data-target="#pic-0" data-toggle="tab"><img src="@Model.ImageFull" /></a></li>*@
+                                                <li class="thumb active"><a href="#" class="elevatezoom-gallery" data-update="" data-image="@Model.ImageFull" data-zoom-image="@Model.ImageFull"><img src="@Model.ImageFull" /></a></li>
+                                                var counts = 1;
+                                                var videoSrc = "";
+                                                var videoClass = "";
+                                                var productImage = "";
+
+                                                if (Model.AdditionalImages != null)
+                                                {
+                                                    foreach (var item in Model.AdditionalImages)
+                                                    {
+                                                        if (item.videoUrl != null && item.videoUrl != "")
+                                                        {
+                                                            videoSrc = "true";
+                                                            videoClass = "display:inline-block;";
+                                                            productImage = "https://img.youtube.com/vi/" + item.videoUrl + "/0.jpg";
+                                                        }
+                                                        else
+                                                        {
+                                                            videoClass = "display:none;";
+                                                            productImage = item.Image;
+                                                        }
+                                                @*<li><a data-target="#pic_@counts" video-src="@videoSrc" data-toggle="tab"><span style="@videoClass" class="video-tumb-wrapper"><i class="fa fa-play" aria-hidden="true"></i></span><img src="@item.Image" /></a></li>*@
+                                                <li class="thumb"><a data-target="#pic_@counts" video-src="@videoSrc" data-toggle="tab" data-update="" data-image="@productImage" data-zoom-image="@productImage" href="#" class="elevatezoom-gallery"><span style="@videoClass" class="video-tumb-wrapper"><i class="fa fa-play" aria-hidden="true"></i></span><img src="@item.Image" /></a></li>
+                                                        counts++;
+                                                    }
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12 col-sm-12 float-left pr-0 pr-md-3 pr-lg-3 pr-xs-3 pl-0 pl-md-3 pl-lg-3 pl-xs-3 form-section item-contentconfig-area">
+                                <h3>Choose your custom fit</h3>
+                                <div id="categoryProductFilter" class="col-lg-12 col-md-12 col-sm-12 form-group mobile-controlled wrapper-product-filters">
+                                    <div class="col-lg-12 mobile-controlled">
+                                        <div class="col-12 mobile-controlled pl-0 pr-0">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 form-group px-0 pl-lg-2" id="divSize">
+                                                <label>Select Size </label>
+                                                <span id="indicator_ddlSize" class='wrapper-status-done d-none'> <i class='fa fa-check-circle text-success'></i></span>
+                                                <select class="form-control" id="ddlSize" onchange="promotional.getColorBySize()">
+                                                    <option value="-1">-- Size --</option>
+                                                    @if (availableSizes != null && availableSizes.Count > 0)
+                                                    {
+                                                        foreach (var item in availableSizes)
+                                                        {
+                                                            if (item != null)
+                                                            {
+                                                    <option value="@item">@item</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div id="divColor" class="col-lg-12 col-md-12 col-sm-12 px-0 pl-lg-2 form-group">
+                                                <label>Select Color </label>
+                                                <span id="indicator_ddlColor" class='wrapper-status-done d-none'> <i class='fa fa-check-circle text-success'></i></span>
+                                                <select class="form-control" id="ddlColor" onchange="promotional.getItemsBySizeAndColor()" disabled><option>-- Color --</option></select>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                            <div id="divStyle" class="col-lg-12 col-md-12 col-sm-12 px-0 pl-lg-2 form-group d-none">
+                                                <label>Select Style </label>
+                                                <span id="indicator_ddlStyle" class='wrapper-status-done d-none'> <i class='fa fa-check-circle text-success'></i></span>
+                                                <select class="form-control" id="ddlStyle" onchange="promotional.getItemsBySizeColorAndStyle()" disabled><option>-- Style --</option></select>
+                                            </div>
+                                            <div id="divCaptureFitmentGaps" class="col-lg-12 wrapper-need-help"></div>
+                                            <div id="divConfigSelector"></div>
+                                            <div id="divFeatures" style="display:none"></div>
+                                            <div id="colourSelectContainer" class="col-12"></div>
+                                            <div id='modifiersContainer' style="display:none">
+                                                @if (Model.Modifiers != null)
+                                                {
+                                                    for (int i = 1; i <= Model.Modifiers.Count; i++)
+                                                    {
+                                                <div id="modifier_selector_@i" class="col-lg-12 text-align-right mt-3 pl-0 pr-0"></div>
+                                                    }
+                                                <div id="personalize-mod-container" class="col-lg-12 text-align-right mt-3"></div>
+                                                }
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 mt-lg-0 pb-2 d-inline-block px-0 px-lg-3" id="divPromoItemDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @*Draw Configurator results*@
+                        @*<div class="col-lg-12 col-md-12 col-sm-12 mt-lg-4 py-3 d-inline-block px-0 px-lg-3" id="divItemDeatisl"></div>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/promotional.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            debugger;
+            var imgWidth = $('.zoom-img').width();
+            var imgHeight = $('.zoom-img').height();
+
+            if ($(window).width() < 992) {
+                var zoomtype = 'lens';
+            } else {
+                var zoomtype = 'window';
+            }
+
+            $("#zoom_03").ezPlus({
+                gallery: 'gallery_01',
+                cursor: 'pointer',
+                galleryActiveClass: "active",
+                imageCrossfade: true,
+                scrollZoom: true,
+                borderColour: '#eee',
+                zoomWindowOffsetX: 23,
+                zoomWindowOffsetY: -2,
+                zoomWindowHeight: imgHeight,
+                zoomWindowWidth: imgWidth,
+                responsive: true,
+                zoomType: zoomtype,
+                lensSize: 200
+            });
+    });
+
+    </script>
+}

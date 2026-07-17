@@ -1,0 +1,35 @@
+﻿@model int
+
+    <div class="breadcrumbs-cus text-center">
+        <div class="d-inline-flex">
+            @switch (Model)
+            {
+                case 1: /*current page : cutomer info page*/
+                    <a class="active"><label class="number">1</label><label class="mb-0 title">Your Info</label> <i class="fa fa-angle-right"></i></a>
+                    <a class="disable"><label class="number">2</label><label class="mb-0 title">Review &amp; Pay</label> <i class="fa fa-angle-right"></i></a>
+                    <a class="disable"><label class="number last">3</label><label class="mb-0 title px-md-0 pl-2 pr-0">Complete</label> </a>
+                    break;
+                case 2: /*current page : payment page*/
+                    <a href="/Order/CustomerInfo"><label class="number">1</label><label class="mb-0 title">Your Info</label>  <i class="fa fa-angle-right"></i></a>
+                    <a class="active"><label class="number">2</label ><label class="mb-0 title">Review &amp; Pay</label>   <i class="fa fa-angle-right"></i></a>
+                    <a class="disable"><label class="number last">3</label><label class="mb-0 title px-md-0 pl-2 pr-0">Complete</label> </a>
+                    break;
+                case 3: /*current page : confimation page*/
+                    <a class="disable"><label class="number">1</label><label class="mb-0 title">Your Info</label>  <i class="fa fa-angle-right"></i></a>
+                    <a class="disable"><label class="number">2</label><label class="mb-0 title">Review &amp; Pay</label> <i class="fa fa-angle-right"></i></a>
+                    <a class="active"><label class="number last">3</label><label class="mb-0 title px-md-0 pl-2 pr-0">Complete</label> </a>
+                    break;
+                case 4: /*current page : customer info page, link active for payment page*/
+                    <a class="active"><label class="number">1</label><label class="mb-0 title">Your Info</label>  <i class="fa fa-angle-right"></i></a>
+                    <a href="/Order/OrderConfirmation"><label class="number">2</label><label class="mb-0 title">Review &amp; Pay</label>  <i class="fa fa-angle-right"></i></a>
+                    <a class="disable"><label class="number last">3</label><label class="mb-0 title px-md-0 pl-2 pr-0">Complete</label> </a>
+                    break;
+                default: /*default*/
+                    <a><label class="number">1</label><label class="mb-0 title">Your Info</label> <i class="fa fa-angle-right"></i></a>
+                    <a><label class="number">2</label><label class="mb-0 title">Review &amp; Pay</label> <i class="fa fa-angle-right"></i></a>
+                    <a><label class="number last">3</label><label class="mb-0 title px-md-0 pl-2 pr-0">Complete</label> </a>
+                    break;
+            }
+
+        </div>
+    </div>

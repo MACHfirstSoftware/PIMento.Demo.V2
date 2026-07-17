@@ -1,0 +1,78 @@
+﻿@model PHXCOM.PlatformSDK.Models.CurrentOrder
+@{
+    ViewData["Title"] = "Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string nocartItemClass = "";
+    if (Model.BillingInfo == null)
+    {
+        Model.BillingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
+    }
+
+    string disabled = "";
+    if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
+    {
+        disabled = "disabled";
+    }
+    Model.AllowCartItemChanges = true;
+
+}
+
+@if (Model.OrderItems != null && Model.OrderItems.Count > 0)
+{
+
+    nocartItemClass = "display:none";
+    <div class="container">
+        <div id="cartContainer" class="row pb-4">
+            <div class="col-12">
+                <div class="col-12 mt-4 pt-3">
+                    <h1 class="page-header text-center text-md-left">your cart</h1>
+                </div>
+                <div class="col-lg-12 col-12 float-left">
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="cartItemContainer">
+                                @await Html.PartialAsync("CurrentOrderItemView", Model)
+                            </div>
+                            <div id="curentOrderInfo" class="text-right row float-right col-12 mx-auto px-md-0 col-md-6 col-lg-4 mt-3 pt-2">
+                                @await Html.PartialAsync("CurrentOrderInfo", Model)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 d-inline-block text-right mt-3 pr-3 pr-md-3 pr-xl-3">
+                    @*<button class="btn btn-dark rounded-0 px-4 font-18 float-left" onclick="window.location.href='/catalog'">Continue Shopping</button>*@
+                    @*<button class="btn btn-primary common-button px-4 bg-color-org" onclick="window.location.href='/Order/CustomerInfo'">Checkout</button>*@
+                    <button class="btn btn-green px-5 py-1" onclick="cartEntry.cartCheckout()">Checkout</button>
+                </div>
+                @*<div class="col-12 d-inline-block mt-3">
+                        <h3 class="section-header py-2 px-3 text-center colo text-white bg-dark">BEGIN CHECKOUT</h3>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<div class="container">
+    <div class="py-5" id="noCartItemContainer" style="@nocartItemClass">
+        <h3 class="content-empty-message"> Your cart is empty. Please add items to your cart.</h3>
+    </div>
+</div>
+
+@*@await Html.PartialAsync("~/Views/Product/CommonPopupView.cshtml")*@
+
+
+@section Scripts
+{
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                setCookieValuesToAppProp();
+            });
+        </script>*@
+
+    <script>
+        //$("input[type='number']").inputSpinner();
+        $(".buttons-only").inputSpinner({ buttonsOnly: true });
+    </script>
+}

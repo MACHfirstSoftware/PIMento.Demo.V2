@@ -1,0 +1,29 @@
+﻿# Build artifacts
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE directories
+.vs/
+.vscode/
+
+# Tooling output
+TestResults/
+artifacts/
+coverage/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local secrets
+secrets.json
+**/appsettings.Local.json

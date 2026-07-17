@@ -1,0 +1,36 @@
+﻿@*@model System.Collections.Generic.List<string>*@
+@model System.Collections.Generic.Dictionary<string,string>
+
+@{
+    Layout = null;
+    KeyValuePair<string, string> firstElement = new KeyValuePair<string, string>();
+    if (Model.Count > 0)
+    {
+        firstElement = Model.FirstOrDefault();
+    }
+
+    var reversedDictionary = Model.Reverse().ToDictionary(x => x.Key, x => x.Value);
+    //Dictionary<string, string> slugs = new Dictionary<string, string>();
+    //foreach (var slug in Model)
+    //{
+    //    slugs.Add(slug, slug.Replace("-", " "));
+    //}
+}
+
+@if (reversedDictionary.Count > 0)
+{
+    //slugs.Reverse();
+    @foreach (var item in reversedDictionary)
+    {
+        if (item.Key == firstElement.Key)
+        {
+            <span class="main-header-bc"> <a href="@item.Key" class="active">  @item.Value </a></span>
+        }
+        else
+        {
+            <span class="main-header-bc"> <a href="@item.Key">  @item.Value <i class="fa fa-angle-right ml-1 mt-1 "></i> </a></span>
+        }
+    }
+
+}
+
