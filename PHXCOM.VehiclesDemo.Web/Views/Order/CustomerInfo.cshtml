@@ -4,17 +4,13 @@
 @{
     ViewData["Title"] = "Customer Information";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    string nocartItemClass = "";
     if (Model.ShippingInfo == null)
     {
         Model.ShippingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
     }
 
-    string disabled = "";
-    if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
-    {
-        disabled = "disabled";
-    }
+    string disabled = EbizClient.LoginSession.CurrentLogin().LoginSuccess ? "disabled" : string.Empty;
+
     Model.AllowCartItemChanges = false;
 
     string notifyChecked = Model.ContactNotify == true ? "checked" : "";

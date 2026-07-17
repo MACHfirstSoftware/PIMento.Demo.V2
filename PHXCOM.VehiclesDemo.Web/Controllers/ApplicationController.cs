@@ -25,9 +25,9 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
         }
 
         [HttpPost("/Application/ApplicationGuide")]
-        public async Task<IActionResult> ApplicationGuide()
+        public IActionResult ApplicationGuide()
         {
-            return null;
+            return NoContent();
         }
     }
 }

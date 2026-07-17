@@ -2,17 +2,11 @@
 @{
     ViewData["Title"] = "SlidingCartList";
     //Layout = "~/Views/Shared/_Layout.cshtml";
-    string nocartItemClass = "";
     if (Model.BillingInfo == null)
     {
         Model.BillingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
     }
 
-    string disabled = "";
-    if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
-    {
-        disabled = "disabled";
-    }
     Model.AllowCartItemChanges = true;
     bool shortCart = ViewBag.ShortCart != null ? ViewBag.ShortCart : false;
 

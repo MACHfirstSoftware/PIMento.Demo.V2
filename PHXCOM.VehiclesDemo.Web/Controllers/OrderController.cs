@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PHXCOM.VehiclesDemo.Web.Filters;
 using PHXCOM.VehiclesDemo.Web.Service;
@@ -18,24 +19,80 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
 {
     public class OrderController : Controller
     {
-        public OrderController() 
+        private readonly ILogger<OrderController> _logger;
+
+        public OrderController(ILogger<OrderController> logger)
         {
+            _logger = logger;
             EbizClient.Session.SetSlugSession(new Dictionary<string, string>());
         }
 
         [HttpPost("Order/AddItemsToBucket")]
         public IActionResult AddItemsToBucket(List<OrderItem> items, List<Modifier> selectedCurrentModifiers)
         {
+            if (items == null || items.Count == 0)
+            {
+                var requestId = HttpContext?.TraceIdentifier;
+                _logger.LogWarning(
+                    "Cart mutation rejected. Action={Action} Reason={Reason} RequestId={RequestId}",
+                    "AddItemsToBucket",
+                    "No order items provided",
+                    requestId);
+
+                return BadRequest(new
+                {
+                    code = "invalid_request",
+                    message = "At least one order item is required.",
+                    requestId
+                });
+            }
+
+            selectedCurrentModifiers ??= new List<Modifier>();
+
             var res = EbizClient.Order.AddItemsToBucket(items, selectedCurrentModifiers);
+            if (res == null)
+            {
+                var requestId = HttpContext?.TraceIdentifier;
+                _logger.LogError(
+                    "Cart mutation failed. Action={Action} Reason={Reason} ItemCount={ItemCount} RequestId={RequestId}",
+                    "AddItemsToBucket",
+                    "Order service returned null response",
+                    items.Count,
+                    requestId);
+
+                return StatusCode(StatusCodes.Status502BadGateway, new
+                {
+                    code = "upstream_error",
+                    message = "Unable to add items to cart.",
+                    requestId
+                });
+            }
+
             res.CurrentOrderStep = 1;
 
             EbizClient.Order.SetOrderSession(res);
+            _logger.LogInformation(
+                "Cart mutation succeeded. Action={Action} OrderId={OrderId} ItemCount={ItemCount} ModifierCount={ModifierCount} RequestId={RequestId}",
+                "AddItemsToBucket",
+                res.Id,
+                items.Count,
+                selectedCurrentModifiers.Count,
+                HttpContext?.TraceIdentifier);
+
             return Json(res);
         }
 
         [HttpPost("Order/ChangeItemQty")]
         public bool ChangeItemQty(OrderItem orderItem)
         {
+            var currentOrderId = EbizClient.Order.GetCurrentOrder()?.Id;
+            _logger.LogInformation(
+                "Cart mutation requested. Action={Action} OrderId={OrderId} Payload={Payload} RequestId={RequestId}",
+                "ChangeItemQty",
+                currentOrderId,
+                JsonConvert.SerializeObject(orderItem),
+                HttpContext?.TraceIdentifier);
+
             EbizClient.Order.ChangeItemQuantity(orderItem);
             return true;
         }
@@ -44,7 +101,17 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
         public IActionResult RemoveItemFromBucket(int itemId)
         {
             var res = EbizClient.Order.RemoveItemFromBucket(itemId);
-            return Json(res.OrderItems.Count);
+            var orderItemsCount = res?.OrderItems?.Count ?? 0;
+
+            _logger.LogInformation(
+                "Cart mutation processed. Action={Action} OrderId={OrderId} ItemId={ItemId} RemainingItemCount={RemainingItemCount} RequestId={RequestId}",
+                "RemoveItemFromBucket",
+                res?.Id,
+                itemId,
+                orderItemsCount,
+                HttpContext?.TraceIdentifier);
+
+            return Json(orderItemsCount);
         }
 
         [HttpGet("Order/CurrentOrderInfo")]
@@ -66,7 +133,7 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
 
         [HttpGet("Order/Cart")]
         //[AnalyticFilter]
-        public async Task<IActionResult> Cart()
+        public IActionResult Cart()
         {
             var res = EbizClient.Order.GetCurrentOrder();
             //write analytics
@@ -81,7 +148,7 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
 
         [HttpGet("Order/ViewCart")]
         //[AnalyticFilter]
-        public async Task<IActionResult> ViewCart()
+        public IActionResult ViewCart()
         {
             var res = EbizClient.Order.GetCurrentOrder();
             //write analytics
@@ -257,19 +324,19 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
                     EbizClient.Contact.SetContactToAnalytic(currentOrder.ContactId);
 
                     // modify order with current contact
-                    EbizClient.Order.ModifyCartAsync(new Order() { CartId = res.Id, ContactId = currentOrder.ContactId });
+                    await EbizClient.Order.ModifyCartAsync(new Order() { CartId = res.Id, ContactId = currentOrder.ContactId });
 
                 }
                 // Set order total
-                EbizClient.Order.ModifyCartAsync(new Order() { CartId = res.Id, Total = currentOrder.Total });
+                await EbizClient.Order.ModifyCartAsync(new Order() { CartId = res.Id, Total = currentOrder.Total });
 
                 currentOrder.ContactNotify = contactNotify;
-                EbizClient.Contact.PatchContactAsync(new Contact() { ContactId = currentOrder.ContactId, ContactOptIn = contactNotify });
+                await EbizClient.Contact.PatchContactAsync(new Contact() { ContactId = currentOrder.ContactId, ContactOptIn = contactNotify });
                 EbizClient.Order.SetOrderSession(currentOrder);
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -277,7 +344,7 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
 
         [HttpGet("Order/Finish")]
         
-        public async Task<IActionResult> Finish()
+        public IActionResult Finish()
         {
             //CurrentOrder res = JsonConvert.DeserializeObject<CurrentOrder>(HttpContext.Session.GetString("completeOrder"));
             CurrentOrder res = EbizClient.Order.GetCompleteOrderSession();
@@ -721,7 +788,7 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -855,7 +922,7 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
                 //EbizClient.Order.SetOrderSession(res);
 
                 // modify order async with current contact
-                EbizClient.Order.ModifyCartAsync(new Order() { CartId = res.Id, ContactId = contactId });
+                await EbizClient.Order.ModifyCartAsync(new Order() { CartId = res.Id, ContactId = contactId });
             }
 
             //write analytics
@@ -920,7 +987,7 @@ namespace PHXCOM.VehiclesDemo.Web.Controllers
 
                         EbizClient.Order.SetOrderSession(currentOrder);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
 
                     }

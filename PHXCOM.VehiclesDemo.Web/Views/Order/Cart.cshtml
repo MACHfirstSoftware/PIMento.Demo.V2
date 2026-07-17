@@ -8,11 +8,6 @@
         Model.BillingInfo = new PHXCOM.PlatformSDK.Models.UserInfo();
     }
 
-    string disabled = "";
-    if (EbizClient.LoginSession.CurrentLogin().LoginSuccess)
-    {
-        disabled = "disabled";
-    }
     Model.AllowCartItemChanges = true;
 
 }
