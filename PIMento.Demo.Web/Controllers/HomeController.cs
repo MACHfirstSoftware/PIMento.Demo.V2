@@ -76,7 +76,67 @@ namespace PIMento.Demo.Web.Controllers
             {
             }
 
+            if (makes.Count == 0)
+            {
+                try
+                {
+                    var fallback = await EbizClient.Product.GetFilterProductAsync(true, -1, string.Empty);
+                    var payload = fallback.Content;
+                    if (!string.IsNullOrWhiteSpace(payload))
+                    {
+                        var token = JObject.Parse(payload)["value"];
+                        if (token is JArray array)
+                        {
+                            var distinctMakes = array
+                                .Select(x => x["make"]?.ToString())
+                                .Where(x => !string.IsNullOrWhiteSpace(x))
+                                .Distinct(StringComparer.OrdinalIgnoreCase)
+                                .OrderBy(x => x)
+                                .Select(x => new FilterProp { make = x })
+                                .ToList();
+
+                            if (distinctMakes.Count > 0)
+                            {
+                                makes = distinctMakes;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            if (makes.Count == 0)
+            {
+                // Final safety net so the home picker is never blank when upstream APIs fail.
+                makes = new List<FilterProp>
+                {
+                    new FilterProp { make = "Club Car" },
+                    new FilterProp { make = "E-Z-GO" },
+                    new FilterProp { make = "Yamaha" }
+                };
+            }
+
             return View(new Tuple<List<Feature>, List<FilterProp>>(features, makes));
+        }
+
+        [HttpGet("/Parts")]
+        public IActionResult Parts()
+        {
+            return View("CategoryLanding", BuildCategoryLandingModel("Parts"));
+        }
+
+        [HttpGet("/Accessories")]
+        public IActionResult Accessories()
+        {
+            return View("CategoryLanding", BuildCategoryLandingModel("Accessories"));
+        }
+
+        [HttpGet("/Pro-Shop")]
+        public IActionResult ProShop()
+        {
+            return View("CategoryLanding", BuildCategoryLandingModel("Pro Shop"));
         }
 
         public async Task<IActionResult> Handler()
@@ -237,6 +297,44 @@ namespace PIMento.Demo.Web.Controllers
         public IActionResult Cache()
         {
             return View();
+        }
+
+        private CategoryLandingModel BuildCategoryLandingModel(string section)
+        {
+            var cards = new List<CategoryLandingCard>
+            {
+                new CategoryLandingCard
+                {
+                    Name = "Electrical",
+                    Description = "Batteries, chargers, controllers, and wiring essentials.",
+                    Link = "/Product/FilterProductView"
+                },
+                new CategoryLandingCard
+                {
+                    Name = "Wheels & Tires",
+                    Description = "Street and off-road wheel/tire options for popular fitments.",
+                    Link = "/Product/FilterProductView"
+                },
+                new CategoryLandingCard
+                {
+                    Name = "Body & Trim",
+                    Description = "Seats, enclosures, windshields, and exterior upgrades.",
+                    Link = "/Product/ProductSearchResults"
+                },
+                new CategoryLandingCard
+                {
+                    Name = "Performance",
+                    Description = "Lift kits, suspension, braking, and drivetrain upgrades.",
+                    Link = "/Product/ProductSearchResults"
+                }
+            };
+
+            return new CategoryLandingModel
+            {
+                Section = section,
+                Summary = "Browse major categories and continue into product discovery while upstream category feeds are recovering.",
+                Cards = cards
+            };
         }
 
         [HttpPost("Home/FlushCache")]
