@@ -5,7 +5,7 @@ namespace PHXCOM.VehiclesDemo.Web.Utils
 {
     public static class AppConfig
     {
-        private static IConfiguration _configuration;
+        private static IConfiguration? _configuration;
 
         public static void Initialize(IConfiguration configuration)
         {

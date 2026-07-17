@@ -40,7 +40,7 @@ namespace PHXCOM.VehiclesDemo.Web.Utils
                 await smtpClient.SendMailAsync(mailMsg);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

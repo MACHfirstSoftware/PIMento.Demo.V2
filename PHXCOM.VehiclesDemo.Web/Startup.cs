@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +26,16 @@ namespace PHXCOM.VehiclesDemo.Web
             AppConfig.Initialize(Configuration);
 
             services.AddApplicationInsightsTelemetry();
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+            });
+
+            services.AddControllersWithViews(options =>
+                {
+                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                })
+                .AddRazorRuntimeCompilation();
 
             services.AddSession(options =>
             {
@@ -62,6 +72,7 @@ namespace PHXCOM.VehiclesDemo.Web
               
 
             app.UseRouting();
+            app.UseAuthentication();
             app.UseSession();
             app.UseAuthorization();
 
