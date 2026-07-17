@@ -1,0 +1,87 @@
+name: deploy-azure-webapp
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  WEBAPP_NAME: pimento-demo-v2
+  PROJECT_PATH: PHXCOM.VehiclesDemo.Web/PHXCOM.VehiclesDemo.Web.csproj
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore PHXCOM.VehiclesDemo.sln
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ github.workspace }}/publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp-package
+          path: ${{ github.workspace }}/publish
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: webapp-package
+          path: ${{ github.workspace }}/publish
+
+      - name: Deploy to Azure Web App
+        id: deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ github.workspace }}/publish
+
+      - name: Smoke test deployed routes
+        shell: pwsh
+        env:
+          DEPLOYED_URL: ${{ steps.deploy.outputs.webapp-url }}
+        run: |
+          $base = $env:DEPLOYED_URL
+          if ([string]::IsNullOrWhiteSpace($base)) {
+            $base = "https://${{ env.WEBAPP_NAME }}.azurewebsites.net"
+          }
+
+          $paths = @('/', '/Parts', '/Order/Cart')
+          foreach ($path in $paths) {
+            $uri = "$base$path"
+            try {
+              $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 60
+              if ($response.StatusCode -ge 400) {
+                throw "Smoke test failed for $uri with status $($response.StatusCode)"
+              }
+              Write-Host "$path -> $($response.StatusCode)"
+            }
+            catch {
+              throw "Smoke test failed for $uri. $($_.Exception.Message)"
+            }
+          }
