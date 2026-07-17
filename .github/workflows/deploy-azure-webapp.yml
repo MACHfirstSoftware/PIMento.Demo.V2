@@ -75,15 +75,38 @@ jobs:
             $base = "https://${{ env.WEBAPP_NAME }}.azurewebsites.net"
           }
 
+          function Test-RouteWithRetry {
+            param(
+              [string]$Uri,
+              [int]$MaxAttempts = 8,
+              [int]$RetryDelaySeconds = 10
+            )
+
+            for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+              try {
+                $response = Invoke-WebRequest -Uri $Uri -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 60
+                if ($response.StatusCode -lt 400) {
+                  return $response.StatusCode
+                }
+              }
+              catch {
+                if ($attempt -eq $MaxAttempts) {
+                  throw
+                }
+              }
+
+              Start-Sleep -Seconds $RetryDelaySeconds
+            }
+
+            throw "Route did not become healthy: $Uri"
+          }
+
           $paths = @('/', '/Parts', '/Order/Cart')
           foreach ($path in $paths) {
             $uri = "$base$path"
             try {
-              $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 60
-              if ($response.StatusCode -ge 400) {
-                throw "Smoke test failed for $uri with status $($response.StatusCode)"
-              }
-              Write-Host "$path -> $($response.StatusCode)"
+              $status = Test-RouteWithRetry -Uri $uri
+              Write-Host "$path -> $status"
             }
             catch {
               throw "Smoke test failed for $uri. $($_.Exception.Message)"
